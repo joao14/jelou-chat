@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: CineBot API
+  version: 1.0.0
+  description: |
+    API de reservas de cine con pago por PayPhone. La consumen las **tools de Jelou Brain Studio**.
+
+    **Flujo:** `GET /api/movies` → `GET /api/showtimes` → `GET /api/showtimes/{id}/seats` →
+    `POST /api/reservations` (retiene 10 min) → `POST /api/reservations/{id}/payment` (link de pago) →
+    el cliente paga → `GET /api/reservations/{id}` (`status = PAID` + `ticket_code`).
+
+    Autenticación: header `X-API-Key` (botón **Authorize**). Si el servidor no define `API_KEY`, no se exige.
+servers:
+  - url: /
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Catálogo
+  - name: Reservas
+  - name: Sistema
+paths:
+  /health:
+    get:
+      tags: [Sistema]
+      summary: Healthcheck
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { status: { type: string, example: ok } } }
+  /api/movies:
+    get:
+      tags: [Catálogo]
+      operationId: list_movies
+      summary: Cartelera
+      responses:
+        "200":
+          description: Películas en cartelera
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies: { type: array, items: { $ref: "#/components/schemas/Movie" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/showtimes:
+    get:
+      tags: [Catálogo]
+      operationId: list_showtimes
+      summary: Funciones futuras
+      parameters:
+        - name: movie_id
+          in: query
+          required: false
+          description: Filtra por película. Vacío = todas.
+          schema: { type: string, example: m1 }
+      responses:
+        "200":
+          description: Funciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  showtimes: { type: array, items: { $ref: "#/components/schemas/Showtime" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/showtimes/{id}/seats:
+    get:
+      tags: [Catálogo]
+      operationId: get_seats
+      summary: Asientos disponibles y ocupados de una función
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: m1-1009-19 }
+      responses:
+        "200":
+          description: Mapa de asientos
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeatMap" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/reservations:
+    post:
+      tags: [Reservas]
+      operationId: create_reservation
+      summary: Retiene asientos por 10 minutos
+      description: Máximo 6 asientos. Responde **409** si alguno ya fue tomado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReserveRequest" }
+      responses:
+        "201":
+          description: Reserva creada en estado HELD
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /api/reservations/{id}:
+    get:
+      tags: [Reservas]
+      operationId: get_reservation
+      summary: Estado de una reserva
+      description: Si `status = PAID` incluye `ticket_code`. Un HELD vencido se reporta como EXPIRED.
+      parameters:
+        - $ref: "#/components/parameters/ReservationId"
+      responses:
+        "200":
+          description: Reserva
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/reservations/{id}/payment:
+    post:
+      tags: [Reservas]
+      operationId: create_payment
+      summary: Genera el link de pago (PayPhone)
+      description: Solo para reservas HELD. El link llega en `pay_url`.
+      parameters:
+        - $ref: "#/components/parameters/ReservationId"
+      responses:
+        "200":
+          description: Reserva con `pay_url`
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/reservations/{id}/cancel:
+    post:
+      tags: [Reservas]
+      operationId: cancel_reservation
+      summary: Cancela una reserva no pagada y libera los asientos
+      parameters:
+        - $ref: "#/components/parameters/ReservationId"
+      responses:
+        "200":
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /payphone/callback:
+    get:
+      tags: [Sistema]
+      summary: Redirect de PayPhone (confirma el pago)
+      description: Lo invoca PayPhone al terminar el pago; no lo llama el agente. Devuelve una página HTML.
+      security: []
+      parameters:
+        - { name: id, in: query, required: true, description: paymentId de PayPhone, schema: { type: integer } }
+        - { name: clientTransactionId, in: query, required: true, description: ID de la reserva, schema: { type: string } }
+      responses:
+        "200": { description: Página HTML con el resultado }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    ReservationId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, example: R471631AB44D1 }
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id: { type: string, example: m1 }
+        title: { type: string, example: "Dune: Parte Tres" }
+        genre: { type: string, example: Ciencia ficción }
+        duration_min: { type: integer, example: 155 }
+        rating: { type: string, example: PG-13 }
+    Showtime:
+      type: object
+      properties:
+        id: { type: string, example: m1-1009-19 }
+        movie_id: { type: string, example: m1 }
+        title: { type: string, example: "Dune: Parte Tres" }
+        hall: { type: string, example: Sala 2 }
+        starts_at: { type: string, format: date-time, example: "2026-10-09T19:00:00-05:00" }
+        starts_at_local: { type: string, description: Hora de Ecuador para mostrar al cliente, example: "2026-10-09 19:00" }
+        price: { type: string, example: "$7.50" }
+        price_cents: { type: integer, example: 750 }
+    SeatMap:
+      type: object
+      properties:
+        showtime_id: { type: string, example: m1-1009-19 }
+        available: { type: array, items: { type: string }, example: [A1, A2, A3] }
+        taken: { type: array, items: { type: string }, example: [A4] }
+    ReserveRequest:
+      type: object
+      required: [showtime_id, seats, phone]
+      properties:
+        showtime_id: { type: string, example: m1-1009-19 }
+        seats: { type: array, minItems: 1, maxItems: 6, items: { type: string }, example: [A3, A4] }
+        phone: { type: string, description: Número de WhatsApp del cliente, example: "+593991234567" }
+        name: { type: string, example: Alex }
+    Reservation:
+      type: object
+      properties:
+        reservation_id: { type: string, example: R471631AB44D1 }
+        status: { type: string, enum: [HELD, PAID, EXPIRED, CANCELLED] }
+        movie: { type: string, example: "Dune: Parte Tres" }
+        hall: { type: string, example: Sala 2 }
+        showtime: { type: string, format: date-time }
+        showtime_local: { type: string, example: "2026-10-09 19:00" }
+        seats: { type: array, items: { type: string }, example: [A3, A4] }
+        amount: { type: string, example: "$15.00" }
+        amount_cents: { type: integer, example: 1500 }
+        seconds_left: { type: integer, description: Segundos restantes del hold (0 si no está HELD), example: 598 }
+        expires_at: { type: string, format: date-time }
+        pay_url: { type: string, description: Solo tras crear el pago }
+        ticket_code: { type: string, description: Solo si status = PAID, example: TKT-R471631AB44D1 }
+    Error:
+      type: object
+      properties:
+        error: { type: string, example: uno o más asientos ya no están disponibles }
+  responses:
+    BadRequest:
+      description: Datos inválidos
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    Unauthorized:
+      description: API key inválida
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    NotFound:
+      description: No existe
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    Conflict:
+      description: Asiento tomado o reserva en estado incompatible
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    ServerError:
+      description: Error interno o de la pasarela
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }

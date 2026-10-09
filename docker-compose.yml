@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cinebot
+      POSTGRES_PASSWORD: cinebot
+      POSTGRES_DB: cinebot
+    ports: ["5440:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinebot"]
+      interval: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgres://cinebot:cinebot@db:5432/cinebot?sslmode=disable
+      BASE_URL: ${BASE_URL:-http://localhost:8080}
+      API_KEY: ${API_KEY:-dev-key}
+      PAYPHONE_TOKEN: ${PAYPHONE_TOKEN:-}
+      PAYPHONE_STORE_ID: ${PAYPHONE_STORE_ID:-}
+      JELOU_WEBHOOK_URL: ${JELOU_WEBHOOK_URL:-}
+    ports: ["8080:8080"]
+
+volumes:
+  pgdata:
