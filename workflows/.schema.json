@@ -1,0 +1,1003 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jelou.ai/schemas/workflow.schema.json",
+  "title": "Jelou Workflow",
+  "type": "object",
+  "properties": {
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "branch": {
+            "type": "string"
+          },
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceId",
+          "targetId"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "position": {},
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "AI_LOGIC",
+              "AI_TASK",
+              "BILLING",
+              "CHANNEL_MESSAGE",
+              "CHECKPOINT",
+              "CODE",
+              "CONDITIONAL",
+              "CONNECT",
+              "DATUM",
+              "DATUM_MARKETPLACE",
+              "ECOMMERCE",
+              "EMPTY",
+              "END",
+              "EXTERNAL_AGENT",
+              "FLOW",
+              "GENESYS",
+              "HSM",
+              "HTTP",
+              "HUBSPOT",
+              "IF",
+              "IF_ERROR",
+              "INPUT",
+              "MCP",
+              "MEMORY",
+              "NOTE",
+              "PAUSE",
+              "PAYMENT",
+              "PMA",
+              "RANDOM",
+              "SKILL",
+              "SKILL_MARKETPLACE",
+              "SOAP",
+              "START",
+              "TOOL",
+              "WEBHOOK"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": true,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "AI_LOGIC"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "instructions",
+                    "model",
+                    "variable"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "AI_TASK"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "connections",
+                    "endFunction",
+                    "fallbackModel",
+                    "filesConfig",
+                    "instructions",
+                    "knowledge",
+                    "model",
+                    "nodeType",
+                    "settings",
+                    "variable",
+                    "version"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "CHANNEL_MESSAGE"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "messages"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "CODE"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "content",
+                    "memoryVersion"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "CONDITIONAL"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "conditions"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "CONNECT"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "assignment"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "DATUM"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "action",
+                    "databaseId"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "END"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "outputId"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "HSM"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "destinations",
+                    "elementName"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "HTTP"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "url"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "INPUT"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "prompt",
+                    "variable"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "MCP"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "app",
+                    "selectedToolId",
+                    "toolType"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "MEMORY"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "variables"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "PAUSE"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "duration",
+                    "time"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "RANDOM"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "routes"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "SKILL"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "skillId"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "SKILL_MARKETPLACE"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "skill"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "SOAP"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "functionName",
+                    "url"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "TOOL"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "type": "object",
+                  "required": [
+                    "toolData",
+                    "version"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "skillName": {
+      "type": "string"
+    },
+    "workflowDescription": {
+      "type": "string"
+    },
+    "workflowId": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "workflowName": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nodes",
+    "edges"
+  ],
+  "additionalProperties": true,
+  "x-jelou-branches": {
+    "AI_LOGIC": {
+      "error": "failed",
+      "success": "success"
+    },
+    "AI_TASK": {
+      "error": "failed",
+      "expire": "expire",
+      "success": "success"
+    },
+    "CHANNEL_MESSAGE": [
+      "default",
+      "option:<id>",
+      "exit",
+      "expire",
+      "error"
+    ],
+    "CHECKPOINT": [
+      "default"
+    ],
+    "CODE": {
+      "error": "failed",
+      "success": "success"
+    },
+    "CONDITIONAL": [
+      "condition:<id>",
+      "else"
+    ],
+    "CONNECT": {
+      "operatorNotFound": "output:OPERATOR_NOT_FOUND:failed",
+      "outOfHours": "output:OPERATORS_NOT_IN_SCHEDULER:failed",
+      "success": "output:JelouConnect:success",
+      "unknownError": "output:UNKNOWN_ERROR:failed"
+    },
+    "DATUM": {
+      "error": "failed",
+      "success": "success"
+    },
+    "EMPTY": [
+      "default"
+    ],
+    "HSM": {
+      "error": "failed",
+      "success": "success"
+    },
+    "HTTP": {
+      "error": "failed",
+      "success": "success"
+    },
+    "INPUT": {
+      "exit": "exit",
+      "expire": "expire",
+      "invalidInput": "invalid_input",
+      "success": "success"
+    },
+    "LOCATION_REQUEST": {
+      "exit": "exit",
+      "expire": "expire",
+      "invalidInput": "invalid_input",
+      "success": "success"
+    },
+    "MCP": [
+      "output:<output.id>:success",
+      "output:<output.id>:failed",
+      "success",
+      "failed"
+    ],
+    "MEMORY": [
+      "default"
+    ],
+    "PAUSE": [
+      "default"
+    ],
+    "RANDOM": [
+      "route:<id>"
+    ],
+    "SKILL": [
+      "default",
+      "output:<id>:success",
+      "output:<id>:failed",
+      "output:<id>:default"
+    ],
+    "SKILL_MARKETPLACE": [
+      "success",
+      "failed",
+      "output:<id>:success",
+      "output:<id>:failed"
+    ],
+    "SOAP": {
+      "error": "failed",
+      "success": "success"
+    },
+    "START": [
+      "default"
+    ],
+    "TOOL": [
+      "output:<outputId>:success",
+      "output:<outputId>:failed"
+    ],
+    "WEBHOOK": [
+      "default"
+    ],
+    "WEBVIEW": {
+      "error": "error",
+      "exit": "exit",
+      "expire": "expire"
+    }
+  },
+  "x-jelou-config-derived": {
+    "condition": {
+      "configPath": "configuration.conditions[].id",
+      "edgeBranch": "condition:<id>",
+      "note": "Each condition.id needs a condition:<id> edge plus a sibling else edge; wire is success-<id>.",
+      "sourceTypes": [
+        "CONDITIONAL"
+      ]
+    },
+    "option": {
+      "configPath": "configuration.messages[].options[].id",
+      "edgeBranch": "option:<id>",
+      "note": "Each interactive option.id needs an outbound option:<id> edge; wire handle is the bare id.",
+      "sourceTypes": [
+        "CHANNEL_MESSAGE",
+        "MESSAGE"
+      ]
+    },
+    "output": {
+      "configPath": "(TOOL: the callee's declared output ids, from `jelou tool show <slug|id>`) | configuration.nativeOutputs[].id | configuration.output[].id | (SKILL: the called workflow's outputs[].id)",
+      "edgeBranch": "output:<id>:success | output:<id>:failed | output:<id>:default",
+      "note": "Named output ports: TOOL keys on the output ids the callee declares (never toolData.toolName), MCP on nativeOutputs[].id, SKILL_MARKETPLACE on output[].id, SKILL on the called workflow's outputs[].id; wire is success-<id>:<sourceId> / source-error-<id>:<sourceId> / source-default-<id>:<sourceId> (neutral outputs).",
+      "sourceTypes": [
+        "TOOL",
+        "MCP",
+        "SKILL_MARKETPLACE",
+        "SKILL"
+      ]
+    },
+    "route": {
+      "configPath": "configuration.routes[].id",
+      "edgeBranch": "route:<id>",
+      "note": "Each route.id needs a route:<id> edge; wire handle is the bare id (default type).",
+      "sourceTypes": [
+        "RANDOM"
+      ]
+    }
+  },
+  "x-jelou-rule-docs": {
+    "ai_task_date_tool_unpinned_timezone": {
+      "docRef": "node-specs/AI_TASK.md#business-time-zone",
+      "expectedShape": "\"connections\": { \"tools\": [{ \"name\": \"get_current_date_time\", \"external\": false, \"operationParameters\": { \"get_current_date_time\": { \"timezone\": { \"mode\": \"value\", \"value\": \"<IANA zone>\" } } } }] }  // pin the business zone with mode \"value\" and a non-empty value"
+    },
+    "ai_task_entry_missing_start_command": {
+      "docRef": "node-specs/AI_TASK.md",
+      "expectedShape": "\"startCommand\": \"{{$message.text}}\""
+    },
+    "ai_task_expire_to_end_without_outputs": {
+      "docRef": "node-specs-contract/AI_TASK.md#exits",
+      "expectedShape": "{ \"sourceId\": \"<ai-task>\", \"targetId\": \"<leaf>\", \"branch\": \"expire\" }\n// <leaf>: { \"type\": \"CHANNEL_MESSAGE\", \"title\": \"Sesión expirada\", \"configuration\": { \"messages\": [{ \"type\": \"text\", \"text\": \"...\" }] } }"
+    },
+    "ai_task_failed_edge_message_only": {
+      "docRef": "node-specs-contract/AI_TASK.md#exits",
+      "expectedShape": "// no failed edge; on the AI_TASK:\n\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "ai_task_failed_to_end_without_outputs": {
+      "docRef": "node-specs-contract/AI_TASK.md#exits",
+      "expectedShape": "// no failed edge; on the AI_TASK:\n\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "ai_task_memory_ref_needs_template_syntax": {
+      "docRef": "node-specs/AI_TASK.md",
+      "expectedShape": "\"value\": \"{{$memory.<key>}}\""
+    },
+    "AI_TASK_MODEL_CAPABILITY_UNKNOWN": {
+      "docRef": "MODEL_CATALOG.md#never-switch-on-price-alone",
+      "expectedShape": "// catalog carries no capability data for this model — unresolved, not safe. Confirm with: jelou models show <model>"
+    },
+    "AI_TASK_MODEL_LACKS_PDF": {
+      "docRef": "MODEL_CATALOG.md#never-switch-on-price-alone",
+      "expectedShape": "\"model\": \"<a model listed by: jelou models list --capability pdf>\"  // required when settings.pdfDocumentSupport / filesConfig PDFs are set"
+    },
+    "AI_TASK_MODEL_LACKS_VISION": {
+      "docRef": "MODEL_CATALOG.md#never-switch-on-price-alone",
+      "expectedShape": "\"model\": \"<a model listed by: jelou models list --capability vision>\"  // required when settings.readImageUrlWithCaption / settings.image_urls / filesConfig images are set"
+    },
+    "ai_task_multi_mcp_smell": {
+      "docRef": "node-specs/AI_TASK.md",
+      "expectedShape": "\"connections\": { \"mcp\": [{ \"appSlug\": \"<marketplace slug>\", \"name\": \"<app name>\", \"userAppInstallations\": [{ \"id\": \"<installation ulid>\", \"name\": \"<app name>\" }] }] }  // multiple MCPs in one AI_TASK rarely makes sense; consider splitting"
+    },
+    "ai_task_scheduling_missing_date_tools": {
+      "docRef": "node-specs/AI_TASK.md",
+      "expectedShape": "\"connections\": { \"tools\": [{ \"name\": \"get_current_date_time\", \"external\": false, \"operationParameters\": { \"get_current_date_time\": { \"timezone\": { \"mode\": \"value\", \"value\": \"<IANA zone of the business>\" } } } }, { \"name\": \"get_weekday_of_a_date\", \"external\": false }] }  // required when the node connects a scheduling app (Google Calendar, Calendly, ...): an error when the app is recognised exactly (connections.mcp[].appSlug or an installation slug from the marketplace list, or a name that spells the app, e.g. \"Google Calendar\"), a warning when only a word of the name looks like a calendar (\"Booking status API\"); `jelou workflow validate --fix` adds the tools in both cases and pins the zone it finds in the file: a pin another AI_TASK already has (a template or UTC included), else a \"Zona horaria / Time zone / Fuso horário: <IANA>\" line in a prompt (markdown allowed), kept as the author spelled it; with no zone, or two different ones, it pins nothing: pin it yourself (Business time zone in node-specs/AI_TASK.md)"
+    },
+    "ai_task_success_to_end_without_outputs": {
+      "docRef": "node-specs-contract/AI_TASK.md#exits",
+      "expectedShape": "{ \"sourceId\": \"<ai-task>\", \"targetId\": \"<leaf>\", \"branch\": \"success\" }\n// <leaf>: { \"type\": \"CHANNEL_MESSAGE\", \"title\": \"Cierre\", \"configuration\": { \"messages\": [{ \"type\": \"text\", \"text\": \"...\" }] } }"
+    },
+    "ai_task_termination_drift": {
+      "docRef": "node-specs/AI_TASK.md",
+      "expectedShape": "\"endFunction\": { \"description\": \"<when to terminate>\", \"rawSchema\": { \"status\": { \"type\": \"string\", \"description\": \"completed | cancelled\", \"required\": true } } }  // rawSchema is a flat field map; the engine reads only type/description/required"
+    },
+    "bootstrap_competing_entries": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// wire the unwired entry; next to the wired WEBHOOK that feeds the flow an unwired START is only a warning (not in a marketplace skill)\n{ \"nodes\": [/* no START: the tool adds it */ ...], \"edges\": [{ \"sourceId\": \"START\", \"targetId\": \"<first-node>\", \"branch\": \"default\" }] }"
+    },
+    "bootstrap_entry_disconnected": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// one \"default\" edge from START (\"START\" resolves to it) to the first node\n{ \"sourceId\": \"START\", \"targetId\": \"<first-node>\", \"branch\": \"default\" }"
+    },
+    "bootstrap_missing_entry": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// never hand-write START: `jelou workflow validate --fix` and push insert it (not into a workflow that enters through a WEBHOOK)\n{ \"nodes\": [/* no START: the tool adds it */ ...], \"edges\": [{ \"sourceId\": \"START\", \"targetId\": \"<first-node>\", \"branch\": \"default\" }] }"
+    },
+    "buttons_to_list_conversion": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md",
+      "expectedShape": "// > 3 options: switch BUTTONS to LIST.\n\"type\": \"LIST\", \"options\": [{...}, {...}, {...}, {...}]"
+    },
+    "CODE_PDF_GENERATION": {
+      "docRef": "FUNCTION_HANDOFF.md",
+      "expectedShape": "{ \"type\": \"HTTP\", \"configuration\": { \"method\": \"POST\", \"url\": \"<document-pdf url>/documents\", \"headers\": [{ \"key\": \"Authorization\", \"value\": \"Bearer {{$secret.JELOU_FN_INVOKE_KEY}}\" }] } }  // then CHANNEL_MESSAGE { \"type\": \"file\", \"url\": \"<downloadUrl>\", \"name\": \"<filename>\" }"
+    },
+    "conditional_memory_key_rewrite": {
+      "docRef": "node-specs/CONDITIONAL.md",
+      "expectedShape": "\"key\": \"$memory.<key>\"  // not \"memory.<key>\" or \"<key>\""
+    },
+    "conditional_term_value1_needs_template_syntax": {
+      "docRef": "node-specs/CONDITIONAL.md",
+      "expectedShape": "\"value1\": \"{{$memory.<key>}}\"  // not bare \"$memory.<key>\""
+    },
+    "conditional_unknown_memory_ref": {
+      "docRef": "node-specs/CONDITIONAL.md",
+      "expectedShape": "\"conditions\": [{ \"terms\": [{ \"value1\": \"{{$memory.<key-set-by-upstream-node>}}\", \"operator\": \"equal\", \"value2\": \"...\" }] }]"
+    },
+    "config_datum_variable_blank": {
+      "docRef": "node-specs/DATUM.md#where-the-result-lands",
+      "expectedShape": "\"variable\": \"searchResults\"  // a blank name is NOT replaced by the default: the engine reads `variable ?? \"response\"`, so it stores the result under the literal blank key"
+    },
+    "config_datum_variable_default": {
+      "docRef": "node-specs/DATUM.md#where-the-result-lands",
+      "expectedShape": "\"variable\": \"searchResults\"  // optional: unset, the engine stores the search result (or the created row) in $memory.response, the bucket every other unnamed node shares"
+    },
+    "config_error_handler_conditional_never_fires": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// inline error handlers never fire on IF/CONDITIONAL — remove the handler and wire the default branch"
+    },
+    "config_error_handler_entry_invalid": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "config_error_handler_invalid_mode": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"mode\": \"message\" | \"skill-redirect\" | \"canvas\""
+    },
+    "config_error_handler_invalid_shape": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "config_error_handler_message_too_long": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"message\": \"<max 1024 chars>\""
+    },
+    "config_error_handler_missing_message": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"error\": { \"mode\": \"message\", \"message\": \"<non-empty, max 1024 chars>\" }"
+    },
+    "config_error_handler_missing_target_skill": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"error\": { \"mode\": \"skill-redirect\", \"targetSkillId\": \"<skill-id>\" }"
+    },
+    "config_error_handler_no_error_key": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// a handlers object without \"error\" silences the project fallback — add one or remove the object:\n\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "config_native_tool_invalid_timezone": {
+      "docRef": "node-specs/AI_TASK.md#business-time-zone",
+      "expectedShape": "\"connections\": { \"tools\": [{ \"name\": \"get_current_date_time\", \"external\": false, \"operationParameters\": { \"get_current_date_time\": { \"timezone\": { \"mode\": \"value\", \"value\": \"<IANA zone>\" } } } }] }  // an IANA Area/City name such as America/Guayaquil; a template ({{...}}) is resolved by the engine"
+    },
+    "config_settings_soapversion": {
+      "docRef": "node-specs/SOAP.md#settingssoapversion--envelope-version",
+      "expectedShape": "\"settings\": { \"soapVersion\": \"1.1\" | \"1.2\" | \"{{$context.soapVersion}}\" }  // any other literal is silently downgraded to 1.1 by the engine"
+    },
+    "config_soapversion": {
+      "docRef": "node-specs/SOAP.md#settingssoapversion--envelope-version",
+      "expectedShape": "\"settings\": { \"soapVersion\": \"1.2\" }  // the engine reads it under settings only, never at the top level of configuration"
+    },
+    "cta_button_text_truncation": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md",
+      "expectedShape": "\"title\": \"<= 20 chars per WhatsApp Cloud API limit>\""
+    },
+    "edge_exit_on_blocking_contact_info_request": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md#contact_info_request",
+      "expectedShape": "// the engine has no cancel path on this subtype — drop the edge and keep only:\n// 'default' (contact shared) and 'expire' (timeout)"
+    },
+    "edge_invalid_branch": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// \"branch\" must be one of the source node type's exits (node-spec <TYPE> lists them):\n{ \"id\": \"<edge id>\", \"sourceId\": \"<source-id>\", \"targetId\": \"<target-id>\", \"branch\": \"<exit of the source type>\" }"
+    },
+    "edge_invalid_source_handle": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"source\": \"<nodeId>\", \"sourceHandle\": \"success\" | \"failed\" | \"expire\" | \"exit\" | \"option:<id>\" | \"branch:<key>\""
+    },
+    "edge_missing_branch": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// every edge names the exit it leaves through:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<source-id>\", \"targetId\": \"<target-id>\", \"branch\": \"<exit of the source type>\" }"
+    },
+    "edge_missing_default": {
+      "docRef": "node-specs/CONDITIONAL.md",
+      "expectedShape": "// every CONDITIONAL needs a default branch:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<conditional-id>\", \"targetId\": \"<fallback-node>\", \"branch\": \"else\" }"
+    },
+    "edge_missing_default_for_blocking_contact_info_request": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md#contact_info_request",
+      "expectedShape": "// the shared contact is only reachable down `default`:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<contact-node>\", \"targetId\": \"<node that stores the number>\", \"branch\": \"default\" }"
+    },
+    "edge_missing_expire": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "{ \"id\": \"<edge id>\", \"sourceId\": \"<source-id>\", \"targetId\": \"<timeout handler>\", \"branch\": \"expire\" }"
+    },
+    "edge_missing_expire_for_blocking_contact_info_request": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md#contact_info_request",
+      "expectedShape": "// a blocking contact request needs the timeout branch:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<contact-node>\", \"targetId\": \"<timeout-handler>\", \"branch\": \"expire\" }"
+    },
+    "edge_missing_success": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "{ \"id\": \"<edge id>\", \"sourceId\": \"<source-id>\", \"targetId\": \"<next node>\", \"branch\": \"success\" }"
+    },
+    "edge_source_not_found": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"source\" must reference an existing node id; check for typos and stale aliases"
+    },
+    "edge_target_not_found": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "\"target\" must reference an existing node id; check for typos and stale aliases"
+    },
+    "end_output_unverified": {
+      "docRef": "node-specs/END.md",
+      "expectedShape": "{ \"type\": \"END\", \"configuration\": { \"outputId\": \"<declared-output-id>\" } }"
+    },
+    "end_without_declared_outputs": {
+      "docRef": "node-specs/END.md",
+      "expectedShape": "// no END node: the branch ends when it runs out of edges"
+    },
+    "ids_multiple_start_nodes": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// exactly one START per workflow — delete the extra ones, keep the one you pulled\n{ \"nodes\": [{ \"id\": \"<start-id>\", \"type\": \"START\" }, ...] }"
+    },
+    "ids_multiple_webhook_nodes": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// at most one WEBHOOK, never chained to START\n{ \"nodes\": [{ \"id\": \"<start-id>\", \"type\": \"START\" }, { \"id\": \"<webhook-id>\", \"type\": \"WEBHOOK\" }, ...] }"
+    },
+    "ids_reserved_start_alias": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// \"START\" is only ever an edge sourceId; give every other node its own id\n{ \"nodes\": [/* no START: the tool adds it */ ...], \"edges\": [{ \"sourceId\": \"START\", \"targetId\": \"<first-node>\", \"branch\": \"default\" }] }"
+    },
+    "node_error_handler_shadowed": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// the inline handler fires only when the failed branch has ZERO edges;\n// keep the wired edge (recovery logic) OR the handler (message-only), not both"
+    },
+    "node_missing_blocking_default_edge": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md#contact_info_request",
+      "expectedShape": "// the shared contact is only reachable down `default`:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<contact-node>\", \"targetId\": \"<node that stores the number>\", \"branch\": \"default\" }"
+    },
+    "node_missing_blocking_expire_edge": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md#contact_info_request",
+      "expectedShape": "// a blocking contact request needs the timeout branch:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<contact-node>\", \"targetId\": \"<timeout-handler>\", \"branch\": \"expire\" }"
+    },
+    "node_missing_default_condition_edge": {
+      "docRef": "node-specs/CONDITIONAL.md",
+      "expectedShape": "// every CONDITIONAL needs a default branch:\n{ \"id\": \"<edge id>\", \"sourceId\": \"<conditional-id>\", \"targetId\": \"<fallback-node>\", \"branch\": \"else\" }"
+    },
+    "node_missing_failed_edge": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// wire failed ONLY for recovery logic; for a message-only reply use:\n\"nonHappyPathHandlers\": { \"error\": { \"mode\": \"message\", \"message\": \"...\" } }"
+    },
+    "node_missing_success_edge": {
+      "docRef": "NODE_CATALOG.md",
+      "expectedShape": "// every node that can succeed needs a success edge:\n{ \"source\": \"<id>\", \"sourceHandle\": \"success\", \"target\": \"<next-node>\" }"
+    },
+    "option_title_truncation": {
+      "docRef": "node-specs/CHANNEL_MESSAGE.md",
+      "expectedShape": "\"title\": \"<= 24 chars per LIST option limit>\""
+    },
+    "skill_output_default_unreachable": {
+      "docRef": "node-specs/SKILL_NODE.md#returning-a-result-to-the-caller",
+      "expectedShape": "{ \"sourceId\": \"<skill node>\", \"targetId\": \"<next>\", \"branch\": \"output:<outputId>:<success|failed|default>\" }  // no \"default\" edge once any output is wired"
+    },
+    "tool_caller_version_unpinned": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "\"configuration\": { \"toolData\": { \"toolId\": 190, ... }, \"version\": \"public1.0.7\" }  // from: jelou tool versions <slug>"
+    },
+    "tool_conversational_node": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "// tool graphs run with no bot or channel: use HTTP / CODE / DATUM / CONDITIONAL / MEMORY / AI_LOGIC / nested TOOL;\n// move INPUT / AI_TASK / CHANNEL_MESSAGE / HSM / CONNECT / PMA into the calling workflow"
+    },
+    "tool_end_output_missing": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "{ \"id\": \"<nanoid21>\", \"type\": \"END\", \"configuration\": { \"outputId\": \"<id of a declared output>\" } }"
+    },
+    "tool_end_output_unresolved": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "\"outputId\" must equal an `outputs[].id` in the same tools/<slug>.json file"
+    },
+    "tool_output_unreachable": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "// every declared output needs one END selecting it:\n\"outputs\": [{ \"id\": \"<nanoid21>\", \"name\": \"ok\", \"type\": \"SUCCESS\" }]  ->  END.configuration.outputId = \"<nanoid21>\""
+    },
+    "tool_secret_scope": {
+      "docRef": "node-specs/CODE.md",
+      "expectedShape": "// inside a tool: company scope + the tool's own workflow scope. Project scope is unreachable —\n// put a per-project switch in a workflow CODE node instead.\nconst key = await $secret.get(\"MY_API_KEY\");"
+    },
+    "tool_self_reference": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "// a tool may nest other tools (depth <= 5) but never itself — extract the shared steps into a separate tool"
+    },
+    "tool_start_missing": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "// exactly one START, auto-seeded by the server on tool create (a tool fired only by its WEBHOOK needs none):\n{ \"id\": \"<nanoid21>\", \"type\": \"START\", \"configuration\": {} }"
+    },
+    "tool_start_multiple": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "// keep one START node; the runtime picks an entry point nondeterministically when there are several"
+    },
+    "tool_webhook_trigger_mismatch": {
+      "docRef": "node-specs/TOOL.md",
+      "expectedShape": "\"triggerType\": \"WEBHOOK\"  // <-> exactly one { \"type\": \"WEBHOOK\" } node in the graph; \"DEFAULT\" <-> none"
+    }
+  }
+}

@@ -18,12 +18,16 @@ const payphoneBase = "https://pay.payphonetodoesposible.com/api/button"
 
 type PayPhone struct {
 	token, storeID, baseURL string
+	apiBase                 string // sobreescribible en tests
 	client                  *http.Client
+	attempts                int
+	backoff                 time.Duration
 }
 
 func NewPayPhone(token, storeID, baseURL string) *PayPhone {
 	return &PayPhone{token: token, storeID: storeID, baseURL: strings.TrimRight(baseURL, "/"),
-		client: &http.Client{Timeout: 20 * time.Second}}
+		apiBase: payphoneBase, attempts: 3, backoff: 500 * time.Millisecond,
+		client: &http.Client{Timeout: 10 * time.Second}}
 }
 
 // Prepare crea el link de pago. Montos en centavos de USD.
@@ -75,24 +79,49 @@ func (p *PayPhone) Confirm(ctx context.Context, paymentID int64, clientTxID stri
 	return out.StatusCode == 3 || strings.EqualFold(out.TransactionStatus, "Approved"), nil
 }
 
+// post reintenta con backoff exponencial ante errores transitorios (red, 429, 5xx).
+// Los 4xx (token/datos inválidos) no se reintentan: fallarían igual.
 func (p *PayPhone) post(ctx context.Context, path string, in, out any) error {
 	b, _ := json.Marshal(in)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, payphoneBase+path, bytes.NewReader(b))
+	var lastErr error
+	for i := 0; i < p.attempts; i++ {
+		if i > 0 {
+			select {
+			case <-time.After(p.backoff << (i - 1)):
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+		retry, err := p.postOnce(ctx, path, b, out)
+		if err == nil {
+			return nil
+		}
+		lastErr = err
+		if !retry {
+			break
+		}
+	}
+	return lastErr
+}
+
+func (p *PayPhone) postOnce(ctx context.Context, path string, body []byte, out any) (retry bool, err error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, p.apiBase+path, bytes.NewReader(body))
 	if err != nil {
-		return err
+		return false, err
 	}
 	req.Header.Set("Authorization", "Bearer "+p.token)
 	req.Header.Set("Content-Type", "application/json")
 	res, err := p.client.Do(req)
 	if err != nil {
-		return err
+		return ctx.Err() == nil, err // timeout / red caída
 	}
 	defer res.Body.Close()
 	raw, _ := io.ReadAll(res.Body)
 	if res.StatusCode >= 300 {
-		return fmt.Errorf("payphone %s: HTTP %d %s", path, res.StatusCode, truncate(string(raw), 300))
+		transient := res.StatusCode == http.StatusTooManyRequests || res.StatusCode >= 500
+		return transient, fmt.Errorf("payphone %s: HTTP %d %s", path, res.StatusCode, truncate(string(raw), 300))
 	}
-	return json.Unmarshal(raw, out)
+	return false, json.Unmarshal(raw, out)
 }
 
 // splitPhone: "+593991234567" → ("991234567", "593").

@@ -1,0 +1,260 @@
+{
+  "toolId": 8739,
+  "workflowId": 72106,
+  "toolName": "create_reservation",
+  "toolDescription": "Retiene asientos por 10 minutos (máx. 6). 409 si algún asiento ya fue tomado",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [
+    {
+      "name": "showtime_id",
+      "id": "gOnVz4QlxkJmcUQBVtV9z",
+      "displayName": "showtime_id",
+      "description": "ID de la función, ej. m1-1009-19",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 0
+    },
+    {
+      "name": "seats",
+      "id": "Ckx7DIYsEloprMt6Hgp6L",
+      "displayName": "seats",
+      "description": "Asientos a reservar, ej. [\"A1\",\"A2\"] (máx. 6)",
+      "type": "ARRAY",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 1
+    },
+    {
+      "name": "phone",
+      "id": "sgyp7o6g9DTW3w7f28rQc",
+      "displayName": "phone",
+      "description": "Número de WhatsApp del cliente, ej. +593991234567",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 2
+    },
+    {
+      "name": "name",
+      "id": "FidhGk0XGurO9Cb9FMQue",
+      "displayName": "name",
+      "description": "Nombre del cliente",
+      "type": "STRING",
+      "required": false,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 3
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reservation_held",
+      "id": "Wk5bgTKwnlfQa5YMfwi_P",
+      "displayName": "Reservation held",
+      "description": "Reserva HELD con reservation_id, amount y seconds_left.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "reservation_id": "reservation_id",
+        "status": "status",
+        "movie": "movie",
+        "hall": "hall",
+        "showtime": "showtime",
+        "showtime_local": "showtime_local",
+        "seats": "seats",
+        "amount": "amount",
+        "amount_cents": "amount_cents",
+        "seconds_left": "seconds_left",
+        "expires_at": "expires_at",
+        "pay_url": "pay_url",
+        "ticket_code": "ticket_code"
+      },
+      "position": 0
+    },
+    {
+      "name": "reservation_error",
+      "id": "ywtK6m0SoHZXgv59SMzCa",
+      "displayName": "Reservation error",
+      "description": "400 datos inválidos, 404 función, 409 asiento tomado.",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "1VnsjYmHfTuF8hg6r8aIH",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "2467093431fe8ce11e4be",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/reservations",
+        "method": "POST",
+        "output": "reservation",
+        "headers": [
+          {
+            "id": "3dad4910f0d2e7e606685",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "0ca8c29f6256e6eb0f41e",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "561a45931140073fc081a",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "d73ede775da8e5834b87e",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [],
+        "body": {
+          "type": "application/json",
+          "content": "{\"showtime_id\":\"{{$input.showtime_id}}\",\"seats\":{{$input.seats}},\"phone\":\"{{$input.phone}}\",\"name\":\"{{$input.name}}\"}",
+          "enabled": true
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "95591866b0581e4507428",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('reservation_held', body);"
+      }
+    },
+    {
+      "id": "04dcdf91eba77e73bf352",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('reservation_error', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "dd77b0f201bca8564b9e2",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "Wk5bgTKwnlfQa5YMfwi_P"
+      }
+    },
+    {
+      "id": "b2f274f90c2331a48d716",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "ywtK6m0SoHZXgv59SMzCa"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "70b4bcad9b744c22ef873",
+      "sourceId": "1VnsjYmHfTuF8hg6r8aIH",
+      "targetId": "2467093431fe8ce11e4be",
+      "branch": "default"
+    },
+    {
+      "id": "ce6641f2b919963423ada",
+      "sourceId": "2467093431fe8ce11e4be",
+      "targetId": "95591866b0581e4507428",
+      "branch": "success"
+    },
+    {
+      "id": "e101f75eea97f90d3e28a",
+      "sourceId": "2467093431fe8ce11e4be",
+      "targetId": "04dcdf91eba77e73bf352",
+      "branch": "failed"
+    },
+    {
+      "id": "87fb0a06099203bdc5ca1",
+      "sourceId": "95591866b0581e4507428",
+      "targetId": "dd77b0f201bca8564b9e2",
+      "branch": "success"
+    },
+    {
+      "id": "46bec283d0c8feac71470",
+      "sourceId": "04dcdf91eba77e73bf352",
+      "targetId": "b2f274f90c2331a48d716",
+      "branch": "success"
+    }
+  ]
+}

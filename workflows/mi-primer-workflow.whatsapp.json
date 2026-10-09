@@ -1,0 +1,43 @@
+{
+  "workflowId": 72053,
+  "workflowName": "Mi primer workflow",
+  "workflowDescription": "Mi primer workflow",
+  "workflowDefault": true,
+  "nodes": [
+    {
+      "id": "vIdYFkPWUfMY49fOGTM72",
+      "title": "Jelou World!",
+      "configuration": {
+        "messages": [
+          {
+            "id": "PHC0vhEtg6jqin1sCqT5Q",
+            "text": "¡Hola! Soy tu primer agente con Jelou.",
+            "type": "text"
+          }
+        ]
+      },
+      "type": "CHANNEL_MESSAGE",
+      "position": [
+        1118,
+        598
+      ]
+    },
+    {
+      "id": "wkwyMe1Q3Z7bD_cZ17Bgm",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        818,
+        338
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "QlHKbu9MnJCbNI3Kg6UeU",
+      "sourceId": "wkwyMe1Q3Z7bD_cZ17Bgm",
+      "targetId": "vIdYFkPWUfMY49fOGTM72",
+      "branch": "default"
+    }
+  ]
+}

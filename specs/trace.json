@@ -1,0 +1,78 @@
+{
+  "ok": true,
+  "data": {
+    "execution_id": "8ed455ef-71b2-4b7d-9fd7-d33510036f3a",
+    "target_slug": "cinebot-reservas-whatsapp",
+    "target_id": "7bfdd0a27b355498",
+    "terminal": "STABLE",
+    "turn_count": 1,
+    "trace": [
+      {
+        "server_node_id": "lme7nhijK32dNMYOdNz9V",
+        "ts": "2026-10-09T16:53:56.617Z",
+        "node_type": "START",
+        "title": "Start",
+        "status": "SUCCESS"
+      },
+      {
+        "server_node_id": "lme7nhijK32dNMYOdNz9V",
+        "ts": "2026-10-09T16:53:56.626Z",
+        "node_type": "START",
+        "title": "Start",
+        "status": "SUCCESS"
+      },
+      {
+        "server_node_id": "zo0wM39CnTH8lTMEmTH3i",
+        "ts": "2026-10-09T16:53:56.651Z",
+        "node_type": "AI_TASK",
+        "title": "AI Agent",
+        "status": "STARTED"
+      },
+      {
+        "server_node_id": "zo0wM39CnTH8lTMEmTH3i",
+        "ts": "2026-10-09T16:54:03.300Z",
+        "node_type": "AI_TASK",
+        "title": "AI Agent",
+        "status": "SUCCESS"
+      }
+    ],
+    "raw_included": false,
+    "dashboard": {
+      "url": "http://127.0.0.1:8766",
+      "command": "jelou test dashboard"
+    },
+    "stall_diagnosis": {
+      "trace_depth": 4,
+      "last_node": {
+        "id": "zo0wM39CnTH8lTMEmTH3i",
+        "type": "AI_TASK",
+        "title": "AI Agent",
+        "status": "SUCCESS"
+      },
+      "expected_next": [
+        {
+          "edge_id": "755f88b5c42b9ca6c169e",
+          "target_id": "4ca139bc8ae851926af3c",
+          "type": "CHANNEL_MESSAGE",
+          "title": "Sesión expirada",
+          "branch": "expire"
+        },
+        {
+          "edge_id": "81050f768737a626a0f2d",
+          "target_id": "eb3524ff51bc3201034df",
+          "type": "CHANNEL_MESSAGE",
+          "title": "Cierre",
+          "branch": "success"
+        }
+      ],
+      "topology_loaded": true,
+      "note": null
+    }
+  },
+  "meta": {
+    "identity": {
+      "profile": "alex-merino",
+      "profileSource": "flag"
+    }
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "command": "jelou tool",
+  "description": "Pull, edit, push, publish, and version the tools shared across this app's projects.",
+  "arguments": [],
+  "options": [
+    {
+      "name": "--quiet",
+      "type": "boolean",
+      "description": "Suppress informational stderr chatter (spinner, hints, tips). On `status` and `workflow validate` it also hides clean/passing entries, in the payload too. Result lines and errors still print; every other --json payload is unchanged."
+    }
+  ],
+  "examples": [],
+  "subcommands": [
+    {
+      "name": "list",
+      "description": "Lists the tools available to this project's app: slug, tool id, name, ownership, whether a version is published, and whether the tool is pulled locally. `--scope` is repeatable and defaults to SHARED + PURCHASED; BRAIN scope additionally requires `--brain`.",
+      "access": {
+        "effects": [
+          "jelou_read"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "show",
+      "description": "Shows one tool: envelope (name, trigger, ownership), the input/output contract, its latest published version, and — when the tool is tracked in jelou.lock — whether the local tools/<slug>.json graph or contract has drifted. Accepts a numeric tool id, a slug tracked in jelou.lock, or any slug `jelou tool list` prints (resolved against the remote catalog, so no linked project is required).",
+      "access": {
+        "effects": [
+          "jelou_read"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "pull",
+      "description": "Fetch tool definitions (envelope + input/output contract + graph) into tools/<slug>.json. Run with no arguments to list what this project's app exposes without writing anything.",
+      "access": {
+        "effects": [
+          "jelou_read",
+          "local_effect"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "push",
+      "description": "Pushes local tools/<slug>.json edits back to the app: graph node/edge operations, input/output contract changes, and the tool envelope. Validates locally, refuses on purchased or forked tools, force-with-leases against the last pull, and verifies server state before refreshing the lockfile. It writes the tool's live draft, which an AI agent calling the tool without a pinned version runs on its next message (TOOL nodes keep the version they pin), so it asks for confirmation whenever something would change — named slugs included — and always with `--all`; under `--no-input` / `--agent` pass `--yes` or it refuses with exit 2 and pushes nothing. `--dry-run` never asks.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false,
+        "variants": [
+          {
+            "when": "--dry-run",
+            "effects": [
+              "jelou_read",
+              "local_effect"
+            ],
+            "safe_for_inspection": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "publish",
+      "description": "Freezes the tool's live draft into an immutable published snapshot. Refuses while the local file has unpushed edits, because a publish would ship server state you have not reviewed. Version labels are normalized semver (X.Y.Z). Omitting --version mints the smallest label that is still true: a PATCH over the latest published version, or a MAJOR when the declared inputs or outputs actually changed. The envelope reports `previousVersion`, `bump` (`patch` / `major` / `explicit` / `index`) and `contractChanged`. A tool with nothing published starts at 1.0.0; if no published label parses as semver the old `<index>.0.0` fallback applies. The server-side integer index is untouched either way.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "versions",
+      "description": "Lists the published versions of a tool, newest first, annotated with which versions local TOOL caller nodes currently pin. Pins that no longer resolve to a published version are reported separately — those callers fail at runtime. REQUIRES a linked project and a tracked slug: the caller-pin annotation is read from the local workflow files, so there is nothing to report outside one. Use `jelou tool show <id>` for a bare version list anywhere.",
+      "access": {
+        "effects": [
+          "jelou_read"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "bump",
+      "description": "Repoints every local TOOL caller node at a published version of the named tools. Rewrites `configuration.version` in `workflows/*.json` and `tools/*.json`, matching callers by tool id only (never by name). Takes several slugs in one pass, and `--to latest` resolves each slug's newest published label separately. Local edit only — ship workflow callers with `jelou push` and tool callers with `jelou tool push <slug>`.",
+      "access": {
+        "effects": [
+          "jelou_read",
+          "local_effect"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "create",
+      "description": "Creates a new tool, SHARED across this app's projects by default. Inside a linked project it also scaffolds tools/<slug>.json (server-seeded graph, empty contract) and its jelou.lock entry, so the next step is editing that file and running `jelou tool push <slug>`. Inputs and outputs are added separately with `tool input add` / `tool output add`. `--scope BRAIN` attaches the tool to one brain instead, needs --brain, and comes back read-only — a project-scoped tool is not OWNED by the app, so `jelou tool push` is refused on it. Editing the scaffolded graph: every node and edge id you add must be a 21-character nanoid (`[A-Za-z0-9_-]{21}`) or a `tmp_` placeholder the CLI mints on push — anything else is rejected as `ids_invalid_node_id_format`. An edge names its branch with the `branch` field, not `configuration.sourceHandle`: `default`, `success`, `failed`, `else`, `condition:<id>`, `option:<optionId>`, `output:<outputId>:<success|failed>`, `route:<n>`, `connect:<key>`, `expire`, `exit`, `error`, `invalid_input`.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "update",
+      "description": "Updates an existing tool's name and/or description.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "unpublish",
+      "description": "Removes ONE published version of a tool. This is the prerequisite for `jelou tool delete`, which the server refuses while any published version survives. The live draft is untouched. Any TOOL caller node still pinned to this version fails at runtime — the server does not repoint them, so check `jelou tool versions <slug>` first. Refuses under --agent/--no-input without --yes.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "delete",
+      "description": "Deletes a tool. Takes a slug tracked in jelou.lock, any slug `jelou tool list` prints, or the numeric tool id. Inside a linked project it also drops the jelou.lock entry (the server row is gone, so the entry can only dangle) and offers to delete tools/<slug>.json. Refuses under --agent/--no-input without --yes (no --force escape). To stop tracking a tool without deleting it, use `jelou tool untrack <slug>`.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "clone",
+      "description": "Clones an existing tool (with its inputs/outputs) into the current app. Takes a slug tracked in jelou.lock, any slug `jelou tool list` prints, or the numeric tool id. Optionally rename the copy with --name. NOTE: the server-side clone endpoint is currently broken for every tool id — this command reports that precisely rather than making you hunt for the right id.",
+      "access": {
+        "effects": [
+          "jelou_mutation"
+        ],
+        "safe_for_inspection": false
+      }
+    },
+    {
+      "name": "untrack",
+      "description": "Stops tracking a tool in jelou.lock. Local-only and non-destructive: the server tool is untouched and tools/<slug>.json is left on disk. Use it when a tracked tool should no longer take part in `jelou tool push --all` or the dirty-tool scan. `jelou tool pull <slug>` tracks it again.",
+      "access": {
+        "effects": [
+          "local_effect"
+        ],
+        "safe_for_inspection": true
+      }
+    },
+    {
+      "name": "input",
+      "description": "Manage a tool's input variables."
+    },
+    {
+      "name": "output",
+      "description": "Manage a tool's output branches."
+    }
+  ],
+  "exit_codes": [
+    {
+      "code": 0,
+      "meaning": "Success"
+    },
+    {
+      "code": 1,
+      "meaning": "Generic / unknown — build failures, uncategorized"
+    },
+    {
+      "code": 2,
+      "meaning": "Input / validation — bad flag value, missing required arg, schema mismatch"
+    },
+    {
+      "code": 3,
+      "meaning": "Not found — unknown id, slug, or name"
+    },
+    {
+      "code": 4,
+      "meaning": "Auth / forbidden — missing token, expired token, insufficient scope"
+    },
+    {
+      "code": 5,
+      "meaning": "DB not ready — Jelou database still provisioning"
+    },
+    {
+      "code": 6,
+      "meaning": "Transient / API — 5xx and network timeouts are retryable; 4xx are not"
+    },
+    {
+      "code": 7,
+      "meaning": "Sync / conflict — lockfile drift, dirty file conflict, unresolved incoming, push partial-failure"
+    },
+    {
+      "code": 8,
+      "meaning": "Secret detected — reserved (secret-scan helper exists but is currently unwired in production paths)"
+    },
+    {
+      "code": 9,
+      "meaning": "Lock busy — another `jelou pull/push` holds the .jelou/.lock file lock"
+    },
+    {
+      "code": 10,
+      "meaning": "Local toolchain mismatch — `qa.db` schema is incompatible (`QA_SCHEMA_MISMATCH`). Upgrade jelou-cli to proceed."
+    }
+  ]
+}

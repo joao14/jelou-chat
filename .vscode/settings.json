@@ -1,0 +1,16 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "workflows/*.json"
+      ],
+      "url": "./workflows/.schema.json"
+    },
+    {
+      "fileMatch": [
+        "tools/*.json"
+      ],
+      "url": "./tools/.schema.json"
+    }
+  ]
+}

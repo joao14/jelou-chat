@@ -1,0 +1,222 @@
+{
+  "toolId": 8736,
+  "workflowId": 72056,
+  "toolName": "list_showtimes",
+  "toolDescription": "Lista las funciones futuras; filtra por movie_id si se envía",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [
+    {
+      "name": "movie_id",
+      "id": "vtX2zJ-168F-PvUfdmED7",
+      "displayName": "movie_id",
+      "description": "ID de la película, ej. m1. Vacío = todas.",
+      "type": "STRING",
+      "required": false,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 0
+    }
+  ],
+  "outputs": [
+    {
+      "name": "showtimes_listed",
+      "id": "0Uez4ArGWyjfnGuUmwOn9",
+      "displayName": "Showtimes listed",
+      "description": "Funciones con id, sala, starts_at_local y price.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "showtimes": "showtimes"
+      },
+      "position": 0
+    },
+    {
+      "name": "showtimes_error",
+      "id": "_1ilmQ_qiPneY0b8Zejda",
+      "displayName": "Showtimes error",
+      "description": "No se pudieron obtener las funciones.",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "2a5nQegHJt2VJi8YlJCwO",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "Ipvsvbt1k9WWcuyAtoTqQ",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/showtimes",
+        "method": "GET",
+        "output": "showtimes",
+        "headers": [
+          {
+            "id": "d2cad1e41975d97c7279f",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "e7f7205a085b06433421e",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "bb067937e80c2083c4ebb",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "c93b93d6bd31573427332",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [
+          {
+            "id": "decc33c961b0aeded6350",
+            "key": "movie_id",
+            "value": "{{$input.movie_id}}",
+            "enabled": true
+          }
+        ],
+        "body": {
+          "type": "no-content",
+          "content": null,
+          "enabled": false
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "039991640a69d4bf5274f",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('showtimes'); } catch (e) {}\ntry { r = $context.getHttpResponse('showtimes'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('showtimes_listed', body);"
+      }
+    },
+    {
+      "id": "ac51fa952f11ed474ca18",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('showtimes'); } catch (e) {}\ntry { r = $context.getHttpResponse('showtimes'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('showtimes_error', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "hXBGKO9cjTq4voFtqoBvr",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "0Uez4ArGWyjfnGuUmwOn9"
+      }
+    },
+    {
+      "id": "MOktYE4C4z7yx7T-Hn6ae",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "_1ilmQ_qiPneY0b8Zejda"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "0f0fac5414b5701ea00b0",
+      "sourceId": "2a5nQegHJt2VJi8YlJCwO",
+      "targetId": "Ipvsvbt1k9WWcuyAtoTqQ",
+      "branch": "default"
+    },
+    {
+      "id": "65f583eeb4f619c9c30c3",
+      "sourceId": "Ipvsvbt1k9WWcuyAtoTqQ",
+      "targetId": "039991640a69d4bf5274f",
+      "branch": "success"
+    },
+    {
+      "id": "2ef62f4145d6ba7c9d060",
+      "sourceId": "Ipvsvbt1k9WWcuyAtoTqQ",
+      "targetId": "ac51fa952f11ed474ca18",
+      "branch": "failed"
+    },
+    {
+      "id": "ccb89fee05bbfd2679905",
+      "sourceId": "039991640a69d4bf5274f",
+      "targetId": "hXBGKO9cjTq4voFtqoBvr",
+      "branch": "success"
+    },
+    {
+      "id": "3b933dadb23168c90a5bf",
+      "sourceId": "ac51fa952f11ed474ca18",
+      "targetId": "MOktYE4C4z7yx7T-Hn6ae",
+      "branch": "success"
+    }
+  ]
+}

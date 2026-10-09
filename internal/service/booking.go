@@ -138,6 +138,9 @@ func (b *Booking) CreatePayment(ctx context.Context, id string) (*Details, error
 	if r.Status != domain.StatusHeld {
 		return nil, domain.ErrNotHeld
 	}
+	if r.PayURL != "" { // idempotente: reintentos del agente reutilizan el mismo link mientras la reserva siga retenida
+		return b.details(ctx, r)
+	}
 	url, err := b.pay.Prepare(ctx, *r, fmt.Sprintf("CineBot %s asientos %s", r.ShowtimeID, strings.Join(r.Seats, ",")))
 	if err != nil {
 		return nil, fmt.Errorf("pasarela de pago: %w", err)

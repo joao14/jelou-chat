@@ -1,0 +1,9 @@
+{
+  "list_movies": "2.0.3",
+  "list_showtimes": "2.0.3",
+  "get_seats": "2.0.3",
+  "create_reservation": "1.0.3",
+  "create_payment": "1.0.3",
+  "get_reservation": "1.0.3",
+  "cancel_reservation": "1.0.3"
+}

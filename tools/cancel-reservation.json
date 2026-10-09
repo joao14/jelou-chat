@@ -1,0 +1,227 @@
+{
+  "toolId": 8742,
+  "workflowId": 72109,
+  "toolName": "cancel_reservation",
+  "toolDescription": "Cancela una reserva no pagada y libera los asientos",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [
+    {
+      "name": "reservation_id",
+      "id": "yFGZBPhKW4xnv2KqmhdhT",
+      "displayName": "reservation_id",
+      "description": "ID de la reserva",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 0
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reservation_cancelled",
+      "id": "R5XB1iUXKJEBTyNL7t82k",
+      "displayName": "Reservation cancelled",
+      "description": "Reserva CANCELLED.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "reservation_id": "reservation_id",
+        "status": "status",
+        "movie": "movie",
+        "hall": "hall",
+        "showtime": "showtime",
+        "showtime_local": "showtime_local",
+        "seats": "seats",
+        "amount": "amount",
+        "amount_cents": "amount_cents",
+        "seconds_left": "seconds_left",
+        "expires_at": "expires_at",
+        "pay_url": "pay_url",
+        "ticket_code": "ticket_code"
+      },
+      "position": 0
+    },
+    {
+      "name": "cancel_error",
+      "id": "Ef7JSISugGnQb-coA8LaM",
+      "displayName": "Cancel error",
+      "description": "404 reserva, 409 ya pagada.",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "YrMPGstbRvn5TqVc7egQq",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "b105c27839e79c5823bd6",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/reservations/{{$input.reservation_id}}/cancel",
+        "method": "POST",
+        "output": "reservation",
+        "headers": [
+          {
+            "id": "c6948b0e245803440fac5",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "334d589c99196b37efe5a",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "45a02918296ff16064668",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "12f7fe1d74908c799e66d",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [],
+        "body": {
+          "type": "no-content",
+          "content": null,
+          "enabled": false
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "8182fbd7e5d8b80e298e3",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('reservation_cancelled', body);"
+      }
+    },
+    {
+      "id": "07fd4c07c2dda976ab0c3",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('cancel_error', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "cf3896b40cc78c125cf07",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "R5XB1iUXKJEBTyNL7t82k"
+      }
+    },
+    {
+      "id": "d25801ed5822b4fa06e14",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "Ef7JSISugGnQb-coA8LaM"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "785c4ce854e6115ed481b",
+      "sourceId": "YrMPGstbRvn5TqVc7egQq",
+      "targetId": "b105c27839e79c5823bd6",
+      "branch": "default"
+    },
+    {
+      "id": "ad7ffd775d9d3d48572ba",
+      "sourceId": "b105c27839e79c5823bd6",
+      "targetId": "8182fbd7e5d8b80e298e3",
+      "branch": "success"
+    },
+    {
+      "id": "47025a6ad47c9b1a23cba",
+      "sourceId": "b105c27839e79c5823bd6",
+      "targetId": "07fd4c07c2dda976ab0c3",
+      "branch": "failed"
+    },
+    {
+      "id": "83a5f1086ef55ef5640eb",
+      "sourceId": "8182fbd7e5d8b80e298e3",
+      "targetId": "cf3896b40cc78c125cf07",
+      "branch": "success"
+    },
+    {
+      "id": "b194751905f99024bb806",
+      "sourceId": "07fd4c07c2dda976ab0c3",
+      "targetId": "d25801ed5822b4fa06e14",
+      "branch": "success"
+    }
+  ]
+}

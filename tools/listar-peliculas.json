@@ -1,0 +1,203 @@
+{
+  "toolId": 8735,
+  "workflowId": 72055,
+  "toolName": "list_movies",
+  "toolDescription": "Lista la cartelera de películas",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "movies_listed",
+      "id": "np4j3MH-HrHfXNUiuZeJU",
+      "displayName": "Movies listed",
+      "description": "Cartelera con id, título, género, duración y clasificación.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "movies": "movies"
+      },
+      "position": 0
+    },
+    {
+      "name": "movies_error",
+      "id": "Lv4Rt7RtOEDjr1TBHm3s-",
+      "displayName": "Movies error",
+      "description": "No se pudo obtener la cartelera (401 key inválida, 5xx).",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "0FtFttdxk-hPSo3I94kyN",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "ETL0_ggJygAhqVZyhKHxc",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/movies",
+        "method": "GET",
+        "output": "movies",
+        "headers": [
+          {
+            "id": "6bf959f214e1fc190b700",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "67dda9f8b3a4184e83820",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "3d5aa03b378d6e4faed15",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "145fe5d2ca97897675777",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [],
+        "body": {
+          "type": "no-content",
+          "content": null,
+          "enabled": false
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "25f3db3e2e0120ff08491",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('movies'); } catch (e) {}\ntry { r = $context.getHttpResponse('movies'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('movies_listed', body);"
+      }
+    },
+    {
+      "id": "40a4c7dea2de3b41e5676",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('movies'); } catch (e) {}\ntry { r = $context.getHttpResponse('movies'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('movies_error', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "hmaQ9acO8y5WyfS7Kn-mp",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "np4j3MH-HrHfXNUiuZeJU"
+      }
+    },
+    {
+      "id": "990d46a1f8be11300e64e",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "Lv4Rt7RtOEDjr1TBHm3s-"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "8ec71cc623f4eda46a45e",
+      "sourceId": "0FtFttdxk-hPSo3I94kyN",
+      "targetId": "ETL0_ggJygAhqVZyhKHxc",
+      "branch": "default"
+    },
+    {
+      "id": "095000cbd75c3a3c37645",
+      "sourceId": "ETL0_ggJygAhqVZyhKHxc",
+      "targetId": "25f3db3e2e0120ff08491",
+      "branch": "success"
+    },
+    {
+      "id": "0b7915aaabdc245ead301",
+      "sourceId": "ETL0_ggJygAhqVZyhKHxc",
+      "targetId": "40a4c7dea2de3b41e5676",
+      "branch": "failed"
+    },
+    {
+      "id": "4cce3b9445233a7138104",
+      "sourceId": "25f3db3e2e0120ff08491",
+      "targetId": "hmaQ9acO8y5WyfS7Kn-mp",
+      "branch": "success"
+    },
+    {
+      "id": "5a14c8ab0bb5b92540b46",
+      "sourceId": "40a4c7dea2de3b41e5676",
+      "targetId": "990d46a1f8be11300e64e",
+      "branch": "success"
+    }
+  ]
+}

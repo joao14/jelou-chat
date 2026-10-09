@@ -1,0 +1,227 @@
+{
+  "toolId": 8741,
+  "workflowId": 72108,
+  "toolName": "get_reservation",
+  "toolDescription": "Estado de una reserva (HELD, PAID con ticket_code, EXPIRED, CANCELLED)",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [
+    {
+      "name": "reservation_id",
+      "id": "jmEJiLQESpN7bJQKfqUQ9",
+      "displayName": "reservation_id",
+      "description": "ID de la reserva",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 0
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reservation_found",
+      "id": "OWNB6EommYJYRY4xTHFmG",
+      "displayName": "Reservation found",
+      "description": "Reserva con status, seconds_left y ticket_code si PAID.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "reservation_id": "reservation_id",
+        "status": "status",
+        "movie": "movie",
+        "hall": "hall",
+        "showtime": "showtime",
+        "showtime_local": "showtime_local",
+        "seats": "seats",
+        "amount": "amount",
+        "amount_cents": "amount_cents",
+        "seconds_left": "seconds_left",
+        "expires_at": "expires_at",
+        "pay_url": "pay_url",
+        "ticket_code": "ticket_code"
+      },
+      "position": 0
+    },
+    {
+      "name": "reservation_not_found",
+      "id": "_Ee5DN9Q4DymmEh8tnesU",
+      "displayName": "Reservation not found",
+      "description": "404 reserva inexistente.",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "3955x01R-Ixr3QDKXMJmy",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "2f1550b946a9cf6b7ed77",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/reservations/{{$input.reservation_id}}",
+        "method": "GET",
+        "output": "reservation",
+        "headers": [
+          {
+            "id": "e95deee38ac2b9a1f29a0",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "81b73db6cebd6c7f37572",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "01a3558d3cda076b5d13b",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "10b867b88974cd81b47ca",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [],
+        "body": {
+          "type": "no-content",
+          "content": null,
+          "enabled": false
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "657cbd79d00204bd26c3a",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('reservation_found', body);"
+      }
+    },
+    {
+      "id": "2dd2a9116da26dda9096b",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('reservation'); } catch (e) {}\ntry { r = $context.getHttpResponse('reservation'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('reservation_not_found', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "09223836cfab204bfee3c",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "OWNB6EommYJYRY4xTHFmG"
+      }
+    },
+    {
+      "id": "af3126ea7cd2a5ddf4726",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "_Ee5DN9Q4DymmEh8tnesU"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "869f8fa50a062cfbcf3c7",
+      "sourceId": "3955x01R-Ixr3QDKXMJmy",
+      "targetId": "2f1550b946a9cf6b7ed77",
+      "branch": "default"
+    },
+    {
+      "id": "bc1e11b9a93cb8cacaef7",
+      "sourceId": "2f1550b946a9cf6b7ed77",
+      "targetId": "657cbd79d00204bd26c3a",
+      "branch": "success"
+    },
+    {
+      "id": "c61bac3a909e4e680709d",
+      "sourceId": "2f1550b946a9cf6b7ed77",
+      "targetId": "2dd2a9116da26dda9096b",
+      "branch": "failed"
+    },
+    {
+      "id": "e99465e2d4d75864f31c4",
+      "sourceId": "657cbd79d00204bd26c3a",
+      "targetId": "09223836cfab204bfee3c",
+      "branch": "success"
+    },
+    {
+      "id": "ffd6df1195893e5edcaaf",
+      "sourceId": "2dd2a9116da26dda9096b",
+      "targetId": "af3126ea7cd2a5ddf4726",
+      "branch": "success"
+    }
+  ]
+}

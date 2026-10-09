@@ -1,0 +1,111 @@
+lockfileVersion: 7
+brain: 01M4FK46E5YMN2TD7H0P85CBE2
+engine:
+  name: workflow-core
+  resolvedAt: "2026-10-09T16:09:53.651Z"
+  selectedBy: default
+workflows:
+  workflows/cinebot-reservas.whatsapp.json:
+    channel: WHATSAPP
+    default: false
+    description: "Agente de reservas de cine con pago por WhatsApp"
+    hash: "sha256:953135927836c353fef60cd60b7440977d5d94eaa5e56c004b551fe16f26b63f"
+    lastPulledAt: "2026-10-09T17:40:18.072Z"
+    name: "CineBot - Reservas"
+    publishedHash: "sha256:953135927836c353fef60cd60b7440977d5d94eaa5e56c004b551fe16f26b63f"
+    skillId: 52343
+    workflowId: 72054
+  workflows/mi-primer-workflow.whatsapp.json:
+    channel: WHATSAPP
+    default: true
+    description: "Mi primer workflow"
+    hash: "sha256:a432a19e773183835c44a9d16848b143831e3e157fe81624fd27ecb49ecbaa3f"
+    lastPulledAt: "2026-10-09T16:09:53.650Z"
+    name: "Mi primer workflow"
+    skillId: 52342
+    workflowId: 72053
+tools:
+  cancel-reservation:
+    contractHash: "sha256:72d62a8c1d41e0d0a00a0c2335773a6d5ca29acb080cd2504538b23ee541b4d2"
+    envelopeHash: "sha256:c5c12e99dae5b7edf4176204e9a8199e632179774689f1761a5416343d119f86"
+    hash: "sha256:17bcd4ac68ac747d47ad94396681af0dd2a466d5a469b67c99476b3d3f69657d"
+    lastPulledAt: "2026-10-09T17:28:19.982Z"
+    latestVersion: 1.0.3
+    metaHash: "sha256:f603f82e52783f32adc83d3d4e782088569a01962e4dde03aae8a7cd2ddc0a08"
+    name: cancel_reservation
+    ownership: OWNED
+    toolId: 8742
+    versionIndex: 4
+    workflowId: 72109
+  create-payment:
+    contractHash: "sha256:9e22d42d4964be267b55e9e5d0d5c15c950ba0ce8f70b384495a0d68f6cdc824"
+    envelopeHash: "sha256:8dbad3a3c565984e3eead30f3481985878d36b72dc02d5dc45cb124545926131"
+    hash: "sha256:dfbc8c6867ae1ac37800807af6e32e88262e2776487239504d7df4cd2f3a69d1"
+    lastPulledAt: "2026-10-09T17:28:22.858Z"
+    latestVersion: 1.0.3
+    metaHash: "sha256:74a65130f14190908ce0b2e86fa7e50a97167f505b284c7e0763d72b8bfac5b5"
+    name: create_payment
+    ownership: OWNED
+    toolId: 8740
+    versionIndex: 4
+    workflowId: 72107
+  create-reservation:
+    contractHash: "sha256:e18d50031bfb156205051555320cd41a8f51adce77e0cba0f3f3f53f322c7f9c"
+    envelopeHash: "sha256:19b4819080fe1b23ed5b3f070c4be5145241efa6d2f9ac0a5754c1a8fc5de243"
+    hash: "sha256:4745089394f9d069566f4add21c06a766004f226dddf9584aba7c1d572a9027e"
+    lastPulledAt: "2026-10-09T17:28:25.783Z"
+    latestVersion: 1.0.3
+    metaHash: "sha256:bc94c7c50de75e4f15fc2aa6ae1a93274284916ec4f3102d29f9050d1bdff177"
+    name: create_reservation
+    ownership: OWNED
+    toolId: 8739
+    versionIndex: 4
+    workflowId: 72106
+  get-reservation:
+    contractHash: "sha256:c8802f887949fd6b7acbdc77e88ccaa834d3da3f1959561ec2667d5ccf3362c1"
+    envelopeHash: "sha256:bb2be348369dc4e55e6decbdf5c415b94ceacdd311b37f29a3368a3c8d9a74c4"
+    hash: "sha256:e04e4b4f986c7bd25ddc128a1d01b91a39e2b92bb18d65594f2ae3f2d574863c"
+    lastPulledAt: "2026-10-09T17:28:28.651Z"
+    latestVersion: 1.0.3
+    metaHash: "sha256:979213433c47b879ed7614c95cee37ac2a90c7150abff2d42a4c5849f09945ab"
+    name: get_reservation
+    ownership: OWNED
+    toolId: 8741
+    versionIndex: 4
+    workflowId: 72108
+  listar-funciones:
+    contractHash: "sha256:d9be8b4fd6f70017953f261b031a0fba10cb48d1fab34cf94e3f4f6a5436f691"
+    envelopeHash: "sha256:7909328caa9bc00636718b5da9ff348e6f69f250afc48d1483d2493338e8a22d"
+    hash: "sha256:09320d7087b8d4a061db6c0cf7e9fbf76c32e945debac8361076e61491805ad6"
+    lastPulledAt: "2026-10-09T17:28:31.605Z"
+    latestVersion: 2.0.3
+    metaHash: "sha256:8f53ef3105ebfc0f6138b3cd8163c1a80c51e9297e67962c69c17183c8fd5988"
+    name: list_showtimes
+    ownership: OWNED
+    toolId: 8736
+    versionIndex: 5
+    workflowId: 72056
+  listar-peliculas:
+    contractHash: "sha256:b644f8bf5ca3a78d37239debf98114b4e3f7b792dd30419beaaf33440d9af0f0"
+    envelopeHash: "sha256:b63aab866d52aa8f27221f5ce967f910b2e7465b86dabc805feea532bd91c056"
+    hash: "sha256:c4c682a1139c3fe0d4342510e507fc3a7272e87e4e0e56a1f002f0acde9b8f60"
+    lastPulledAt: "2026-10-09T17:28:34.529Z"
+    latestVersion: 2.0.3
+    metaHash: "sha256:7d8c71d97e2ec68cb836c9629993ec9e4cd72bc0358310ffbfd81dcb5915d4f8"
+    name: list_movies
+    ownership: OWNED
+    toolId: 8735
+    versionIndex: 5
+    workflowId: 72055
+  ver-asientos:
+    contractHash: "sha256:aaabaad4f1ad9e7d13a487c90427ce97f3f90f7c82e1ccbd3129783203a907bd"
+    envelopeHash: "sha256:35faf87d3fdc6839c8c666f45148a3b6b16398ff550e064bf939de24f775eaf3"
+    hash: "sha256:ebe433c5d31239cd8cbb1488291dfc868a5ddaae9be85cbcf67a5ce7e35cec98"
+    lastPulledAt: "2026-10-09T17:28:37.413Z"
+    latestVersion: 2.0.3
+    metaHash: "sha256:68caf2abe74e5fcacc8ab9a13c923cd110a34f2c261b14b409ec5a1df39c2b98"
+    name: get_seats
+    ownership: OWNED
+    toolId: 8738
+    versionIndex: 5
+    workflowId: 72078

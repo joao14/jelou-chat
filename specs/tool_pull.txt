@@ -1,0 +1,46 @@
+{
+  "ok": true,
+  "data": {
+    "brain": "01M4FK46E5YMN2TD7H0P85CBE2",
+    "available": [
+      {
+        "slug": "listar-peliculas",
+        "toolId": 8735,
+        "name": "listar_peliculas",
+        "ownership": "OWNED",
+        "triggerType": "DEFAULT",
+        "pulled": false
+      },
+      {
+        "slug": "listar-funciones",
+        "toolId": 8736,
+        "name": "listar_funciones",
+        "ownership": "OWNED",
+        "triggerType": "DEFAULT",
+        "pulled": false
+      },
+      {
+        "slug": "ver-asientos",
+        "toolId": 8738,
+        "name": "ver_asientos",
+        "ownership": "OWNED",
+        "triggerType": "DEFAULT",
+        "pulled": false
+      }
+    ],
+    "pulled": [],
+    "written": [],
+    "conflicts": [],
+    "unchanged": [],
+    "hint": "Nothing was pulled. Name one or more slugs, or pass --all, to write tools/<slug>.json."
+  },
+  "meta": {
+    "project": "/Users/admin/Documents/Jelou/cinebot",
+    "identity": {
+      "profile": "alex-merino",
+      "profileSource": "flag",
+      "organizationId": "01M4FK45Y1Q5KM9JJ5QQ2CXN5D",
+      "companyId": "14706"
+    }
+  }
+}

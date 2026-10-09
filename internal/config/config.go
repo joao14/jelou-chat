@@ -15,6 +15,7 @@ type Config struct {
 	PayPhoneToken string
 	PayPhoneStore string
 	NotifyURL     string
+	FallbackMock  bool
 	AutoMigrate   bool
 	Seed          bool
 	HoldDuration  time.Duration
@@ -30,6 +31,7 @@ func Load() Config {
 		PayPhoneToken: os.Getenv("PAYPHONE_TOKEN"),
 		PayPhoneStore: os.Getenv("PAYPHONE_STORE_ID"),
 		NotifyURL:     os.Getenv("JELOU_WEBHOOK_URL"),
+		FallbackMock:  getBool("PAYMENT_FALLBACK_MOCK", false),
 		AutoMigrate:   getBool("AUTO_MIGRATE", true),
 		Seed:          getBool("SEED", true),
 		HoldDuration:  time.Duration(getInt("HOLD_MINUTES", 10)) * time.Minute,

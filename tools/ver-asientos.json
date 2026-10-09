@@ -1,0 +1,217 @@
+{
+  "toolId": 8738,
+  "workflowId": 72078,
+  "toolName": "get_seats",
+  "toolDescription": "Asientos disponibles y ocupados de una función",
+  "triggerType": "DEFAULT",
+  "ownership": "OWNED",
+  "inputs": [
+    {
+      "name": "showtime_id",
+      "id": "x2whvREcMGX0Mt7_eN2Sj",
+      "displayName": "showtime_id",
+      "description": "ID de la función, ej. m1-1009-19",
+      "type": "STRING",
+      "required": true,
+      "defaultValue": null,
+      "configuration": {},
+      "position": 0
+    }
+  ],
+  "outputs": [
+    {
+      "name": "seats_listed",
+      "id": "1sEpiWDFXHDx4jCkqngyr",
+      "displayName": "Seats listed",
+      "description": "Asientos available y taken de la función.",
+      "type": "SUCCESS",
+      "required": true,
+      "schema": {
+        "showtime_id": "showtime_id",
+        "available": "available",
+        "taken": "taken"
+      },
+      "position": 0
+    },
+    {
+      "name": "seats_error",
+      "id": "BnF9-k2OUnSUguTaLVPQY",
+      "displayName": "Seats error",
+      "description": "Función inexistente (404) o error de API.",
+      "type": "FAILED",
+      "required": true,
+      "schema": {
+        "http_status": "http_status",
+        "error": "error"
+      },
+      "position": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "l4lJZ7tsz5tsoYxkxyOGE",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        431,
+        232
+      ]
+    },
+    {
+      "id": "F0ElTKl7PMTKejckfm5w3",
+      "title": "API",
+      "type": "HTTP",
+      "position": [
+        880,
+        201
+      ],
+      "configuration": {
+        "url": "https://telford-cornelia-nonconjugally.ngrok-free.dev/api/showtimes/{{$input.showtime_id}}/seats",
+        "method": "GET",
+        "output": "seats",
+        "headers": [
+          {
+            "id": "c317046ba2b23ad1e00dd",
+            "key": "Content-type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "id": "9377a93c4f605589c6c24",
+            "key": "X-API-Key",
+            "value": "cinebot-2026-clave-larga",
+            "enabled": true
+          },
+          {
+            "id": "187048a84ef3236fa75d8",
+            "key": "ngrok-skip-browser-warning",
+            "value": "1",
+            "enabled": true
+          },
+          {
+            "id": "d2aefe154d344d67da16b",
+            "key": "accept",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "parameters": [],
+        "body": {
+          "type": "no-content",
+          "content": null,
+          "enabled": false
+        },
+        "authentication": {
+          "type": null,
+          "enabled": true
+        },
+        "settings": {
+          "retries": 0,
+          "timeout": 10000,
+          "sslCertificate": true,
+          "retryOptions": {
+            "enabled": false,
+            "retries": 0,
+            "retryDelay": "no_delay",
+            "milliseconds": 1000,
+            "retryCondition": "is_network_or_idempotent_request_error",
+            "shouldResetTimeout": false
+          },
+          "proxyOptions": {
+            "ip": "185.228.195.219",
+            "auth": {
+              "password": null,
+              "username": null
+            },
+            "host": null,
+            "port": null,
+            "enabled": false,
+            "protocol": "https"
+          }
+        }
+      }
+    },
+    {
+      "id": "bcb2d8a5e4673c974c473",
+      "title": "Devolver resultado",
+      "type": "CODE",
+      "position": [
+        1120,
+        135
+      ],
+      "configuration": {
+        "title": "Devolver resultado",
+        "content": "let c = null, r = null;\ntry { c = $context.get('seats'); } catch (e) {}\ntry { r = $context.getHttpResponse('seats'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('seats_listed', body);"
+      }
+    },
+    {
+      "id": "81a730767925945ce5522",
+      "title": "Devolver error",
+      "type": "CODE",
+      "position": [
+        1120,
+        344
+      ],
+      "configuration": {
+        "title": "Devolver error",
+        "content": "let c = null, r = null;\ntry { c = $context.get('seats'); } catch (e) {}\ntry { r = $context.getHttpResponse('seats'); } catch (e) {}\nlet body = (c && c.data !== undefined && c.data !== null) ? c.data : (r ? r.json : undefined);\nif ((body === undefined || body === null) && r && r.raw) { try { body = JSON.parse(r.raw); } catch (e) {} }\nif (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }\nif (body === undefined || body === null) body = {};\nconst status = (c && c.status) || (r && r.status) || 0;\n$output.set('seats_error', { http_status: status, error: (body && body.error) || 'No se pudo completar la solicitud' });"
+      }
+    },
+    {
+      "id": "brX42H218k4jXUH_7WyBM",
+      "title": "Fin éxito",
+      "type": "END",
+      "position": [
+        1349,
+        135
+      ],
+      "configuration": {
+        "outputId": "1sEpiWDFXHDx4jCkqngyr"
+      }
+    },
+    {
+      "id": "dvJ-1Qky1cHUcufnRBIph",
+      "title": "Fin error",
+      "type": "END",
+      "position": [
+        1346,
+        344
+      ],
+      "configuration": {
+        "outputId": "BnF9-k2OUnSUguTaLVPQY"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "6a07a6dec54bd3b1d68ca",
+      "sourceId": "l4lJZ7tsz5tsoYxkxyOGE",
+      "targetId": "F0ElTKl7PMTKejckfm5w3",
+      "branch": "default"
+    },
+    {
+      "id": "61f87d43cea00fba1ae2e",
+      "sourceId": "F0ElTKl7PMTKejckfm5w3",
+      "targetId": "bcb2d8a5e4673c974c473",
+      "branch": "success"
+    },
+    {
+      "id": "b0cc466787e2d5ec1387d",
+      "sourceId": "F0ElTKl7PMTKejckfm5w3",
+      "targetId": "81a730767925945ce5522",
+      "branch": "failed"
+    },
+    {
+      "id": "2dec93274f8d0baf0e6e7",
+      "sourceId": "bcb2d8a5e4673c974c473",
+      "targetId": "brX42H218k4jXUH_7WyBM",
+      "branch": "success"
+    },
+    {
+      "id": "2d5ba9b158cff68b2577d",
+      "sourceId": "81a730767925945ce5522",
+      "targetId": "dvJ-1Qky1cHUcufnRBIph",
+      "branch": "success"
+    }
+  ]
+}

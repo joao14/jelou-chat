@@ -60,7 +60,12 @@ func main() {
 		log.Warn("PAYPHONE_TOKEN vacío: pagos en modo MOCK")
 		gateway = payment.NewMock(cfg.BaseURL)
 	} else {
-		gateway = payment.NewPayPhone(cfg.PayPhoneToken, cfg.PayPhoneStore, cfg.BaseURL)
+		var fallback payment.Gateway
+		if cfg.FallbackMock {
+			log.Warn("PAYMENT_FALLBACK_MOCK=true: si PayPhone falla se ofrecerá el link MOCK (solo demo)")
+			fallback = payment.NewMock(cfg.BaseURL)
+		}
+		gateway = payment.NewResilient(payment.NewPayPhone(cfg.PayPhoneToken, cfg.PayPhoneStore, cfg.BaseURL), fallback, log)
 	}
 	var notifier service.Notifier = notify.Noop{}
 	if cfg.NotifyURL != "" {
@@ -70,7 +75,7 @@ func main() {
 	svc := service.NewBooking(repo, repo, gateway, notifier, cfg.HoldDuration)
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           httpapi.NewRouter(svc, httpapi.Options{APIKey: cfg.APIKey, MockPayments: mock, Logger: log}),
+		Handler:           httpapi.NewRouter(svc, httpapi.Options{APIKey: cfg.APIKey, MockPayments: mock || cfg.FallbackMock, Logger: log}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      30 * time.Second,

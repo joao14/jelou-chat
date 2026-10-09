@@ -1,0 +1,314 @@
+{
+  "workflowId": 72054,
+  "workflowName": "CineBot - Reservas",
+  "workflowDescription": "Agente de reservas de cine con pago por WhatsApp",
+  "workflowDefault": false,
+  "nodes": [
+    {
+      "id": "4ca139bc8ae851926af3c",
+      "title": "Sesión expirada",
+      "type": "CHANNEL_MESSAGE",
+      "position": [
+        1192,
+        92
+      ],
+      "configuration": {
+        "messages": [
+          {
+            "type": "text",
+            "text": "Cerré la conversación por inactividad. Si tenías una reserva sin pagar, se libera sola a los 10 minutos. Escríbeme y retomamos."
+          }
+        ]
+      }
+    },
+    {
+      "id": "eb3524ff51bc3201034df",
+      "title": "Cierre",
+      "type": "CHANNEL_MESSAGE",
+      "position": [
+        1192,
+        442
+      ],
+      "configuration": {
+        "messages": [
+          {
+            "type": "text",
+            "text": "¡Listo! Gracias por usar CineBot 🎬 Cuando quieras otra función, escríbeme."
+          }
+        ]
+      }
+    },
+    {
+      "id": "lme7nhijK32dNMYOdNz9V",
+      "title": "Start",
+      "type": "START",
+      "position": [
+        357,
+        198
+      ]
+    },
+    {
+      "id": "zo0wM39CnTH8lTMEmTH3i",
+      "title": "AI Agent",
+      "configuration": {
+        "model": "openai/gpt-5.6-luna",
+        "version": "v2",
+        "settings": {
+          "expiration": {
+            "time": "hours",
+            "enabled": false,
+            "duration": 8,
+            "timeInSeconds": 28800
+          },
+          "splitMessages": true
+        },
+        "canRemind": false,
+        "connections": {
+          "mcp": [],
+          "datum": [],
+          "tools": [
+            {
+              "id": "7512bccb163a6b81cacd2",
+              "name": "list_movies",
+              "description": "Lista la cartelera de películas",
+              "toolId": 8735,
+              "version": "2.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": []
+            },
+            {
+              "id": "7c69164f05ac7b2d9d32c",
+              "name": "list_showtimes",
+              "description": "Lista las funciones futuras; filtra por movie_id si se envía",
+              "toolId": 8736,
+              "version": "2.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "movie_id",
+                  "id": "vtX2zJ-168F-PvUfdmED7",
+                  "displayName": "movie_id",
+                  "description": "ID de la película, ej. m1. Vacío = todas.",
+                  "type": "STRING",
+                  "required": false,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                }
+              ]
+            },
+            {
+              "id": "9aa6fb10fe6a80d2b4c6d",
+              "name": "get_seats",
+              "description": "Asientos disponibles y ocupados de una función",
+              "toolId": 8738,
+              "version": "2.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "showtime_id",
+                  "id": "x2whvREcMGX0Mt7_eN2Sj",
+                  "displayName": "showtime_id",
+                  "description": "ID de la función, ej. m1-1009-19",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                }
+              ]
+            },
+            {
+              "id": "7ff79477d09dbbe215e8b",
+              "name": "create_reservation",
+              "description": "Retiene asientos por 10 minutos (máx. 6). 409 si algún asiento ya fue tomado",
+              "toolId": 8739,
+              "version": "1.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "showtime_id",
+                  "id": "gOnVz4QlxkJmcUQBVtV9z",
+                  "displayName": "showtime_id",
+                  "description": "ID de la función, ej. m1-1009-19",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                },
+                {
+                  "name": "seats",
+                  "id": "Ckx7DIYsEloprMt6Hgp6L",
+                  "displayName": "seats",
+                  "description": "Asientos a reservar, ej. [\"A1\",\"A2\"] (máx. 6)",
+                  "type": "ARRAY",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 1
+                },
+                {
+                  "name": "phone",
+                  "id": "sgyp7o6g9DTW3w7f28rQc",
+                  "displayName": "phone",
+                  "description": "Número de WhatsApp del cliente, ej. +593991234567",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 2
+                },
+                {
+                  "name": "name",
+                  "id": "FidhGk0XGurO9Cb9FMQue",
+                  "displayName": "name",
+                  "description": "Nombre del cliente",
+                  "type": "STRING",
+                  "required": false,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 3
+                }
+              ]
+            },
+            {
+              "id": "81147df369bc9ae17f517",
+              "name": "create_payment",
+              "description": "Genera el link de pago (pay_url) de una reserva HELD",
+              "toolId": 8740,
+              "version": "1.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "reservation_id",
+                  "id": "R2XYQ0Grd5LIfOCysclpN",
+                  "displayName": "reservation_id",
+                  "description": "ID de la reserva, ej. R471631AB44D1",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                }
+              ]
+            },
+            {
+              "id": "2bb34b4281141b9f59abb",
+              "name": "get_reservation",
+              "description": "Estado de una reserva (HELD, PAID con ticket_code, EXPIRED, CANCELLED)",
+              "toolId": 8741,
+              "version": "1.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "reservation_id",
+                  "id": "jmEJiLQESpN7bJQKfqUQ9",
+                  "displayName": "reservation_id",
+                  "description": "ID de la reserva",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                }
+              ]
+            },
+            {
+              "id": "fe868d98f95e2919e0b24",
+              "name": "cancel_reservation",
+              "description": "Cancela una reserva no pagada y libera los asientos",
+              "toolId": 8742,
+              "version": "1.0.3",
+              "action": "none",
+              "external": true,
+              "inputs": [
+                {
+                  "name": "reservation_id",
+                  "id": "yFGZBPhKW4xnv2KqmhdhT",
+                  "displayName": "reservation_id",
+                  "description": "ID de la reserva",
+                  "type": "STRING",
+                  "required": true,
+                  "defaultValue": null,
+                  "configuration": {},
+                  "position": 0
+                }
+              ]
+            },
+            {
+              "name": "get_current_date_time",
+              "external": false,
+              "action": "none",
+              "operationParameters": {
+                "get_current_date_time": {
+                  "timezone": {
+                    "mode": "value",
+                    "value": "America/Guayaquil"
+                  }
+                }
+              }
+            },
+            {
+              "name": "get_weekday_of_a_date",
+              "external": false,
+              "action": "none"
+            }
+          ]
+        },
+        "filesConfig": {
+          "files": [],
+          "enabled": false
+        },
+        "instructions": "# Agente: CineBot — Reservas de cine con pago por WhatsApp\n\n## Rol\nEres **CineBot**, asistente de reservas de un cine en Ecuador. Atiendes por WhatsApp.\nTono: cercano, breve, en español neutro con toque ecuatoriano amable. Máx. 3-4 líneas por mensaje, 1 emoji como máximo. Una sola pregunta por mensaje.\n\n## Flujo obligatorio\n1. **Saludo + cartelera**: llama `list_movies` y ofrece las películas (título, género, duración).\n2. **Función**: tras elegir película, llama `list_showtimes(movie_id)` y muestra día/hora (usa siempre `starts_at_local`, hora de Ecuador), sala y precio por entrada.\n3. **Asientos**: pregunta cuántas personas y llama `get_seats(showtime_id)`. Muestra una vista simple por filas (ej. `A: 1 2 ❌ ❌ 5 6 7 8`) o resume disponibilidad por fila. Nunca ofrezcas asientos que no estén en `available`.\n4. **Datos**: confirma nombre (el número de WhatsApp ya lo tienes, úsalo como `phone`).\n5. **Resumen y confirmación**: antes de reservar, muestra película, función, asientos, total. Pide un \"sí\" explícito.\n6. **Retener**: llama `create_reservation`. Dile al cliente que tiene **10 minutos** para pagar.\n7. **Pago**: llama `create_payment(reservation_id)` y envía el `pay_url` como link. Explica que paga con PayPhone o tarjeta.\n8. **Verificación**: cuando el cliente diga \"ya pagué\" (o pasen ~1 min), llama `get_reservation`. \n   - `PAID` → felicita y entrega **ticket_code**, película, hora, sala y asientos. \n   - `HELD` → \"Aún no veo el pago\", reenvía el link, recuerda el tiempo restante (`seconds_left`).\n   - `EXPIRED` → informa que se liberaron y ofrece reiniciar con los mismos asientos si siguen libres.\n9. **Cancelar**: si el cliente se arrepiente antes de pagar, llama `cancel_reservation`.\n\n## Reglas\n- Nunca inventes funciones, precios, asientos ni estados: todo viene de las tools.\n- Nunca digas que un pago está confirmado sin ver `status = PAID` en `get_reservation`.\n- Si `create_reservation` devuelve 409 (asiento tomado), vuelve a llamar `get_seats` y ofrece alternativas cercanas.\n- Máximo 6 asientos por reserva.\n- No pidas tarjeta ni datos bancarios por chat; el pago solo ocurre en el link.\n- Si piden reembolso o algo fuera de alcance, ofrece derivar a un humano.\n- Si el mensaje no es sobre cine/reservas, responde amable y redirige.\n\n## Manejo de errores de las tools\nCada tool termina en éxito o en error; el detalle del error viene en el campo `error` (en español). Actúa así:\n- **401 / 5xx / sin respuesta**: no culpes al cliente. Di que hay un problema técnico, reintenta una vez; si persiste, ofrece derivar a un humano.\n- **404 en `get_seats` o `list_showtimes`**: la función no existe. Vuelve a `list_showtimes` y ofrece otra.\n- **409 en `create_reservation`**: asiento tomado. Llama `get_seats` y ofrece alternativas cercanas. No reintentes con los mismos asientos.\n- **400 en `create_reservation`**: faltan datos o pasó de 6 asientos. Pídele al cliente lo que falte.\n- **409 en `create_payment`**: la reserva ya no está retenida. Llama `get_reservation`; si está `EXPIRED`, ofrece reiniciar.\n- **500 en `create_payment`**: falló la pasarela. Reintenta una vez y si falla avisa que la reserva sigue retenida unos minutos.\n- **409 en `cancel_reservation`**: ya está pagada; no se puede cancelar por chat, ofrece derivar a un humano.\n- **404 en `get_reservation`**: el id no existe; confirma con el cliente.\nNunca muestres JSON, códigos HTTP ni mensajes técnicos al cliente.\n\n## Ejemplo (tono)\nCliente: hola\nCineBot: ¡Hola! 🎬 Soy CineBot. Esta semana tenemos: *Dune: Parte Tres*, *Intensamente 3* y *Misión Imposible*. ¿Cuál te animas a ver?\n\n\n## Contexto del cliente\nIdentificador del usuario en el canal (en WhatsApp es su número): {{$user.id}}\nSi parece un teléfono (dígitos, con o sin +), úsalo como `phone` sin pedirlo. Si está vacío o no parece un teléfono, pídelo UNA sola vez con código de país.\n",
+        "startCommand": "{{$message.text}}",
+        "fallbackModel": {
+          "name": "gpt-4o-azure",
+          "model": "azure/gpt-4o",
+          "provider": "azure"
+        },
+        "variable": "agentResponse",
+        "nonHappyPathHandlers": {
+          "error": {
+            "mode": "message",
+            "message": "Tuve un problema técnico y no pude completar tu solicitud. Intenta de nuevo en unos minutos 🙏"
+          }
+        },
+        "endFunction": {
+          "description": "Termina cuando el cliente ya recibió su ticket (status PAID), canceló su reserva, o dejó claro que no quiere continuar. No termines mientras haya una reserva HELD sin pagar. Termina justo tras confirmar, sin despedida extra."
+        }
+      },
+      "type": "AI_TASK",
+      "position": [
+        804,
+        92
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "755f88b5c42b9ca6c169e",
+      "sourceId": "zo0wM39CnTH8lTMEmTH3i",
+      "targetId": "4ca139bc8ae851926af3c",
+      "branch": "expire"
+    },
+    {
+      "id": "81050f768737a626a0f2d",
+      "sourceId": "zo0wM39CnTH8lTMEmTH3i",
+      "targetId": "eb3524ff51bc3201034df",
+      "branch": "success"
+    },
+    {
+      "id": "AG4YQcw1PkF0zhqOCPUbM",
+      "sourceId": "lme7nhijK32dNMYOdNz9V",
+      "targetId": "zo0wM39CnTH8lTMEmTH3i",
+      "branch": "default"
+    }
+  ]
+}
