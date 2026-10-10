@@ -2,42 +2,8 @@
   "workflowId": 72054,
   "workflowName": "CineBot - Reservas",
   "workflowDescription": "Agente de reservas de cine con pago por WhatsApp",
-  "workflowDefault": false,
+  "workflowDefault": true,
   "nodes": [
-    {
-      "id": "4ca139bc8ae851926af3c",
-      "title": "Sesión expirada",
-      "type": "CHANNEL_MESSAGE",
-      "position": [
-        1192,
-        92
-      ],
-      "configuration": {
-        "messages": [
-          {
-            "type": "text",
-            "text": "Cerré la conversación por inactividad. Si tenías una reserva sin pagar, se libera sola a los 10 minutos. Escríbeme y retomamos."
-          }
-        ]
-      }
-    },
-    {
-      "id": "eb3524ff51bc3201034df",
-      "title": "Cierre",
-      "type": "CHANNEL_MESSAGE",
-      "position": [
-        1192,
-        442
-      ],
-      "configuration": {
-        "messages": [
-          {
-            "type": "text",
-            "text": "¡Listo! Gracias por usar CineBot 🎬 Cuando quieras otra función, escríbeme."
-          }
-        ]
-      }
-    },
     {
       "id": "lme7nhijK32dNMYOdNz9V",
       "title": "Start",
@@ -289,14 +255,48 @@
         804,
         92
       ]
+    },
+    {
+      "id": "eb3524ff51bc3201034df",
+      "title": "Cierre",
+      "type": "CHANNEL_MESSAGE",
+      "position": [
+        1192,
+        442
+      ],
+      "configuration": {
+        "messages": [
+          {
+            "type": "text",
+            "text": "¡Listo! Gracias por usar CineBot 🎬 Cuando quieras otra función, escríbeme."
+          }
+        ]
+      }
+    },
+    {
+      "id": "4ca139bc8ae851926af3c",
+      "title": "Sesión expirada",
+      "type": "CHANNEL_MESSAGE",
+      "position": [
+        1192,
+        92
+      ],
+      "configuration": {
+        "messages": [
+          {
+            "type": "text",
+            "text": "Cerré la conversación por inactividad. Si tenías una reserva sin pagar, se libera sola a los 10 minutos. Escríbeme y retomamos."
+          }
+        ]
+      }
     }
   ],
   "edges": [
     {
-      "id": "755f88b5c42b9ca6c169e",
-      "sourceId": "zo0wM39CnTH8lTMEmTH3i",
-      "targetId": "4ca139bc8ae851926af3c",
-      "branch": "expire"
+      "id": "AG4YQcw1PkF0zhqOCPUbM",
+      "sourceId": "lme7nhijK32dNMYOdNz9V",
+      "targetId": "zo0wM39CnTH8lTMEmTH3i",
+      "branch": "default"
     },
     {
       "id": "81050f768737a626a0f2d",
@@ -305,10 +305,10 @@
       "branch": "success"
     },
     {
-      "id": "AG4YQcw1PkF0zhqOCPUbM",
-      "sourceId": "lme7nhijK32dNMYOdNz9V",
-      "targetId": "zo0wM39CnTH8lTMEmTH3i",
-      "branch": "default"
+      "id": "755f88b5c42b9ca6c169e",
+      "sourceId": "zo0wM39CnTH8lTMEmTH3i",
+      "targetId": "4ca139bc8ae851926af3c",
+      "branch": "expire"
     }
   ]
 }

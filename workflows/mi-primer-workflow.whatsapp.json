@@ -2,7 +2,7 @@
   "workflowId": 72053,
   "workflowName": "Mi primer workflow",
   "workflowDescription": "Mi primer workflow",
-  "workflowDefault": true,
+  "workflowDefault": false,
   "nodes": [
     {
       "id": "vIdYFkPWUfMY49fOGTM72",

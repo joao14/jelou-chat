@@ -19,7 +19,7 @@ PROMPT = ROOT / "brain" / "agent_prompt.md"
 USE_SECRET = "--secret" in sys.argv
 CHECK = "--check" in sys.argv
 def load_versions():
-    f = ROOT / "tools" / "versions.json"   # lo escribe scripts/jelou_versions.py (make jelou-publish)
+    f = ROOT / "jelou.tool-versions.json"   # lo escribe scripts/jelou_versions.py (make jelou-publish)
     return json.loads(f.read_text()) if f.exists() else {}
 
 
@@ -241,6 +241,7 @@ def build_workflow(built):
     cierre["configuration"] = {"messages": [{"type": "text", "text": "¡Listo! Gracias por usar CineBot 🎬 Cuando quieras otra función, escríbeme."}]}
     expira = next((x for x in wf["nodes"] if x["title"] == "Sesión expirada"), {"id": sid("wf", "expira"), "title": "Sesión expirada", "type": "CHANNEL_MESSAGE", "position": [1200, 260]})
     expira["configuration"] = {"messages": [{"type": "text", "text": "Cerré la conversación por inactividad. Si tenías una reserva sin pagar, se libera sola a los 10 minutos. Escríbeme y retomamos."}]}
+    wf["workflowDefault"] = True   # el canal de WhatsApp debe arrancar siempre en CineBot
     wf["nodes"] = [start, agent, cierre, expira]
     wf["edges"] = [
         next((e for e in wf["edges"] if e["sourceId"] == start["id"]), {"id": sid("wf", "e0"), "sourceId": start["id"], "targetId": agent["id"], "branch": "default"}),

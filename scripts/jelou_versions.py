@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lee la última versión publicada de cada tool y la guarda en tools/versions.json."""
+"""Lee la última versión publicada de cada tool y la guarda en jelou.tool-versions.json."""
 import json, subprocess, sys
 from pathlib import Path
 
@@ -34,5 +34,5 @@ for name, slug in SLUGS.items():
         v = None
     print(f"{name:20s} -> {v}")
     if v: out[name] = v
-(ROOT / "tools" / "versions.json").write_text(json.dumps(out, indent=2) + "\n")
-print("guardado tools/versions.json")
+(ROOT / "jelou.tool-versions.json").write_text(json.dumps(out, indent=2) + "\n")
+print("guardado jelou.tool-versions.json")

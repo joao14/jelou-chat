@@ -9,8 +9,8 @@ workflows:
     channel: WHATSAPP
     default: false
     description: "Agente de reservas de cine con pago por WhatsApp"
-    hash: "sha256:953135927836c353fef60cd60b7440977d5d94eaa5e56c004b551fe16f26b63f"
-    lastPulledAt: "2026-10-09T17:40:18.072Z"
+    hash: "sha256:1b4092f85f152e766fb7d0e4937079417e3814c9edb0c30810cb5939f890651f"
+    lastPulledAt: "2026-10-09T19:03:13.965Z"
     name: "CineBot - Reservas"
     publishedHash: "sha256:953135927836c353fef60cd60b7440977d5d94eaa5e56c004b551fe16f26b63f"
     skillId: 52343
@@ -19,8 +19,8 @@ workflows:
     channel: WHATSAPP
     default: true
     description: "Mi primer workflow"
-    hash: "sha256:a432a19e773183835c44a9d16848b143831e3e157fe81624fd27ecb49ecbaa3f"
-    lastPulledAt: "2026-10-09T16:09:53.650Z"
+    hash: "sha256:ccd22823df9714aacb8f94d0525e89a8241e86057fe951aa9310f78aa6bdd755"
+    lastPulledAt: "2026-10-09T19:03:13.962Z"
     name: "Mi primer workflow"
     skillId: 52342
     workflowId: 72053
